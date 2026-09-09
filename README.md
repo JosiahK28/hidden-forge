@@ -27,6 +27,11 @@ js/journal.js     Journal rendering and filtering
 
 Faster alternative with no account: drag the unzipped folder onto `app.netlify.com/drop`.
 
+## Content status
+
+- **Creed:** all seven pillars are complete — the verbatim text of the Synthesis of Order from the source Obsidian vault, not paraphrased.
+- **Manifesto:** 3 of 14 planned chapters are drafted (Chapters I–III). The rest are still to come.
+
 ## Editing content
 
 **Add a Creed pillar.** Copy a `.pillar` block in `creed.html`. To include it in the audit, add an entry to `AUDIT_ITEMS` in `js/creed.js` — the form builds itself from that list, and the scoring bands in `VERDICTS` are keyed to a 45-point maximum, so adjust `min` values if you change the item count.
