@@ -4,9 +4,23 @@
 
 const captured = new Map(); // element -> text
 
+const drawerEl     = document.getElementById('drawer');
+const badgeEl       = document.getElementById('drawer-badge');
+const badgeCountEl  = document.getElementById('drawer-badge-count');
+const panelEl       = document.getElementById('drawer-panel');
 const listEl  = document.getElementById('drawer-list');
 const countEl = document.getElementById('drawer-count');
 const hintEl  = document.getElementById('drawer-hint');
+
+function openPanel() {
+  panelEl.hidden = false;
+  badgeEl.setAttribute('aria-expanded', 'true');
+}
+
+function closePanel() {
+  panelEl.hidden = true;
+  badgeEl.setAttribute('aria-expanded', 'false');
+}
 
 function render() {
   listEl.innerHTML = '';
@@ -23,7 +37,24 @@ function render() {
   hintEl.textContent = n === 0
     ? 'Click any passage above to capture it. Click it again to release it.'
     : 'Click a captured passage again to release it.';
+
+  badgeCountEl.textContent = n;
+  badgeEl.setAttribute('aria-label', n === 0 ? 'Insight drawer, empty' : `Insight drawer, ${n} passage${n > 1 ? 's' : ''} captured`);
+  drawerEl.hidden = n === 0;
+  if (n === 0) closePanel();
 }
+
+badgeEl.addEventListener('click', () => {
+  if (panelEl.hidden) openPanel(); else closePanel();
+});
+
+document.addEventListener('click', (e) => {
+  if (!drawerEl.hidden && !panelEl.hidden && !drawerEl.contains(e.target)) closePanel();
+});
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && !panelEl.hidden) closePanel();
+});
 
 function toggle(el) {
   if (captured.has(el)) {

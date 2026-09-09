@@ -49,7 +49,7 @@
   <div class="shell">
     <span class="kicker">// fourteen chapters, written in the open</span>
     <h1>Hybrid Right: The Forge of Rebirth</h1>
-    <p class="lede">Virtue ethics, Christian theology, and what a civilisation owes the men it raises. Click any passage that lands and it drops into the drawer at the foot of the page.</p>
+    <p class="lede">Virtue ethics, Christian theology, and what a civilisation owes the men it raises. Click any passage that lands and it drops into the insight drawer, bottom right.</p>
   </div>
 </section>
 
@@ -125,17 +125,20 @@
 
   </div>
 
-  <div class="drawer" id="drawer">
-    <div class="shell">
+  <div class="drawer" id="drawer" hidden>
+    <button type="button" class="drawer-badge" id="drawer-badge" aria-expanded="false" aria-controls="drawer-panel" aria-label="Insight drawer">
+      <span id="drawer-badge-count">0</span>
+    </button>
+    <div class="drawer-panel" id="drawer-panel" hidden>
       <div class="btn-row" style="margin-top:0; justify-content:space-between;">
         <strong id="drawer-count">Insight drawer — empty</strong>
-        <span>
-          <button type="button" class="btn" id="drawer-save">Save to journal</button>
-          <button type="button" class="btn quiet" id="drawer-clear">Clear</button>
-        </span>
       </div>
       <ol id="drawer-list"></ol>
       <p class="hint" id="drawer-hint">Click any passage above to capture it. Click it again to release it.</p>
+      <div class="btn-row">
+        <button type="button" class="btn" id="drawer-save">Save to journal</button>
+        <button type="button" class="btn quiet" id="drawer-clear">Clear</button>
+      </div>
     </div>
   </div>
 </main>
