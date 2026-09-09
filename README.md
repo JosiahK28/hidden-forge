@@ -34,7 +34,7 @@ Faster alternative with no account: drag the unzipped folder onto `app.netlify.c
 
 ## Editing content
 
-**Add a Creed pillar.** Copy a `.pillar` block in `creed.html`. To include it in the audit, add an entry to `AUDIT_ITEMS` in `js/creed.js` — the form builds itself from that list, and the scoring bands in `VERDICTS` are keyed to a 45-point maximum, so adjust `min` values if you change the item count.
+**Add a Creed pillar.** Copy a `.pillar` block in `creed.html`. To include it in the audit, add an entry to `AUDIT_ITEMS` in `js/creed.js` — the form builds itself from that list, and the max possible score is always `AUDIT_ITEMS.length * 5`, so the `min` thresholds in `VERDICTS` need rescaling proportionally if you change the item count.
 
 **Add a manifesto chapter.** Paste the text into `manifesto.html` and wrap each capturable passage in `<p class="excerpt" tabindex="0" role="button">`. No further wiring needed.
 
