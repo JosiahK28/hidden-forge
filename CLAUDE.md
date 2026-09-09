@@ -5,14 +5,20 @@ Deployed on GitHub Pages from the `main` branch, root folder.
 
 ## Hard constraints
 
-- **No frameworks, no build step, no backend.** No React, no Tailwind, no bundler,
-  no package.json. If a change seems to need one, say so and stop rather than
+- **No frameworks, no build step, no bundler.** No React, no Tailwind, no
+  package.json. If a change seems to need one, say so and stop rather than
   introducing it.
-- **No browser storage beyond localStorage**, and only through the `HF` store in
-  `js/store.js`. Never read or write `localStorage` directly from a page script.
-- **No external dependencies** except the Google Fonts import at the top of
-  `css/style.css`. Do not add CDN scripts.
-- Every page must work from a `file://` open, not just a server.
+- **Local storage remains the default and the fallback.** Every read/write goes
+  through the `HF` store in `js/store.js`, never `localStorage` directly from a
+  page script. Nothing should ever require an account to work.
+- **Backend is Supabase (auth + journal sync), and it is a deliberate, approved
+  exception** to "no backend," not accidental scope creep. Don't add any other
+  backend or database. Every feature must keep working fully offline/signed-out.
+- **External dependencies:** the Google Fonts import in `css/style.css`, and the
+  Supabase JS CDN script loaded on every page before `store.js`. Don't add any
+  other CDN scripts without updating this file.
+- Every page must work from a `file://` open, not just a server, for everything
+  that doesn't require the network (sign-in and cloud sync obviously need it).
 
 ## Layout
 
@@ -53,16 +59,17 @@ respected at the bottom of the stylesheet — don't add animation that bypasses 
 ## Content conventions
 
 - **Adding a Creed pillar**: copy a `.pillar` block in `creed.html`. To include it
-  in the audit, add to `AUDIT_ITEMS` in `js/creed.js`. The `VERDICTS` bands are
-  keyed to a 45-point maximum (9 items × 5), so recalculate the `min` values if
-  the item count changes.
+  in the audit, add to `AUDIT_ITEMS` in `js/creed.js` — the max score is always
+  `AUDIT_ITEMS.length * 5` (currently 35, 7 items × 5), computed dynamically, so
+  only the `VERDICTS` `min` thresholds need rescaling if the item count changes.
 - **Adding a manifesto passage**: wrap it in
   `<p class="excerpt" tabindex="0" role="button">`. The capture system picks it up
   with no further wiring.
 - **Adding a decoder phrase**: append to `PHRASE_MAP` in `js/lab.js`. `match` is an
   array of lowercase substrings; `beneath` is the decoding.
-- Pages currently marked "Draft scaffolding" in a `.callout` hold placeholder prose.
-  When real content replaces it, remove the callout.
+- No page currently has placeholder/"draft scaffolding" prose — all live content is
+  either sourced from the Obsidian vault or explicitly approved rewritten prose.
+  If you add a placeholder `.callout` again, remove it once real content lands.
 
 ## Voice
 
