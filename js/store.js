@@ -106,6 +106,16 @@ const HF = {
   signOut() {
     if (!hfClient) return Promise.resolve();
     return hfClient.auth.signOut();
+  },
+
+  /** Deletes every cloud-synced entry for the signed-in account, then signs out.
+      The auth identity itself (the email) is not deleted — only the journal data. */
+  async deleteAllCloudData() {
+    if (!hfClient || !hfSession) return { error: new Error('Not signed in') };
+    const { error } = await hfClient.from('journal_entries').delete().eq('user_id', hfSession.user.id);
+    if (error) return { error };
+    await HF.signOut();
+    return { error: null };
   }
 };
 
@@ -178,6 +188,7 @@ async function hfPullFromCloud() {
 
 const hfAccountStatus = document.getElementById('hf-account-status');
 const hfAccountToggle = document.getElementById('hf-account-toggle');
+const hfAccountDelete = document.getElementById('hf-account-delete');
 const hfAccountForm   = document.getElementById('hf-account-form');
 const hfAccountEmail  = document.getElementById('hf-account-email');
 
@@ -186,10 +197,12 @@ function hfRenderAccount() {
   if (hfSession) {
     hfAccountStatus.textContent = hfSession.user.email;
     hfAccountToggle.textContent = 'Sign out';
+    if (hfAccountDelete) hfAccountDelete.hidden = false;
     if (hfAccountForm) hfAccountForm.hidden = true;
   } else {
     hfAccountStatus.textContent = 'Guest';
     hfAccountToggle.textContent = 'Sign in';
+    if (hfAccountDelete) hfAccountDelete.hidden = true;
   }
 }
 
@@ -210,7 +223,11 @@ if (hfAccountForm) {
     e.preventDefault();
     const email = hfAccountEmail.value.trim();
     if (!email) return;
+    const submitBtn = hfAccountForm.querySelector('button[type="submit"]');
+    submitBtn.disabled = true;
+    hfAccountStatus.textContent = 'Sending…';
     HF.signInWithEmail(email).then(({ error }) => {
+      submitBtn.disabled = false;
       if (error) {
         hfAccountStatus.textContent = 'Could not send link';
         console.error('Hidden Forge: sign-in failed', error);
@@ -218,6 +235,20 @@ if (hfAccountForm) {
       }
       hfAccountForm.hidden = true;
       hfAccountStatus.textContent = `Link sent to ${email}`;
+    });
+  });
+}
+
+if (hfAccountDelete) {
+  hfAccountDelete.addEventListener('click', () => {
+    if (!confirm('Delete all your journal entries from your account and sign out? This cannot be undone.')) return;
+    hfAccountDelete.disabled = true;
+    HF.deleteAllCloudData().then(({ error }) => {
+      if (error) {
+        console.error('Hidden Forge: could not delete account data', error);
+        hfAccountStatus.textContent = 'Could not delete — try again';
+        hfAccountDelete.disabled = false;
+      }
     });
   });
 }

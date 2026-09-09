@@ -5,8 +5,13 @@
 const entriesEl = document.getElementById('entries');
 const filtersEl = document.getElementById('filters');
 const newStatus = document.getElementById('new-status');
+const searchEl  = document.getElementById('search');
+
+const auditTrendSection = document.getElementById('audit-trend-section');
+const auditTrendEl      = document.getElementById('audit-trend');
 
 let activeTag = null;
+let activeQuery = '';
 
 function renderFilters() {
   filtersEl.innerHTML = '';
@@ -36,7 +41,8 @@ function makeChip(label, pressed, onClick) {
 
 function renderEntries() {
   const all = HF.all();
-  const shown = activeTag ? all.filter(e => e.tags.includes(activeTag)) : all;
+  let shown = activeTag ? all.filter(e => e.tags.includes(activeTag)) : all;
+  if (activeQuery) shown = shown.filter(e => e.text.toLowerCase().includes(activeQuery));
 
   entriesEl.innerHTML = '';
 
@@ -45,7 +51,13 @@ function renderEntries() {
     return;
   }
   if (!shown.length) {
-    entriesEl.innerHTML = `<div class="empty">No entries tagged “${activeTag}”.</div>`;
+    const empty = document.createElement('div');
+    empty.className = 'empty';
+    const parts = [];
+    if (activeQuery) parts.push(`matching “${activeQuery}”`);
+    if (activeTag) parts.push(`tagged “${activeTag}”`);
+    empty.textContent = `No entries ${parts.join(' and ')}.`;
+    entriesEl.appendChild(empty);
     return;
   }
 
@@ -93,9 +105,55 @@ function renderEntries() {
   });
 }
 
+function renderAuditTrend() {
+  if (!auditTrendSection) return;
+
+  const audits = HF.all()
+    .filter(e => e.source === 'creed-audit')
+    .map(e => {
+      const m = e.text.match(/^Creed Audit — (\d+)\/45 · (.+)$/m);
+      return m ? { ts: e.ts, score: Number(m[1]), title: m[2] } : null;
+    })
+    .filter(Boolean)
+    .sort((a, b) => a.ts - b.ts);
+
+  if (!audits.length) {
+    auditTrendSection.hidden = true;
+    return;
+  }
+  auditTrendSection.hidden = false;
+  auditTrendEl.innerHTML = '';
+
+  audits.forEach(a => {
+    const row = document.createElement('div');
+    row.className = 'trend-row';
+
+    const label = document.createElement('span');
+    label.className = 'trend-label';
+    label.textContent = HF.formatDate(a.ts).split('  ')[0];
+    row.appendChild(label);
+
+    const track = document.createElement('div');
+    track.className = 'trend-track';
+    const bar = document.createElement('div');
+    bar.className = 'trend-bar';
+    bar.style.width = `${Math.round((a.score / 45) * 100)}%`;
+    track.appendChild(bar);
+    row.appendChild(track);
+
+    const score = document.createElement('span');
+    score.className = 'trend-score';
+    score.textContent = `${a.score}/45 · ${a.title}`;
+    row.appendChild(score);
+
+    auditTrendEl.appendChild(row);
+  });
+}
+
 function render() {
   renderFilters();
   renderEntries();
+  renderAuditTrend();
 }
 
 document.getElementById('new-save').addEventListener('click', (e) => {
@@ -113,6 +171,11 @@ document.getElementById('new-save').addEventListener('click', (e) => {
 document.getElementById('export').addEventListener('click', (e) => {
   const ok = HF.exportMarkdown();
   if (!ok) hfFlash(e.target, 'Nothing to export');
+});
+
+searchEl.addEventListener('input', (e) => {
+  activeQuery = e.target.value.trim().toLowerCase();
+  renderEntries();
 });
 
 window.addEventListener('hf:updated', render);
