@@ -94,6 +94,35 @@ body {
 .site-nav a[aria-current="page"] { color: var(--gold-bright); border-bottom-color: var(--gold); }
 .site-nav .sep { color: var(--iron-line); margin: 0 0.4rem; }
 
+.nav-account {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.25rem;
+}
+
+.account {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.76rem;
+  color: var(--parchment-45);
+}
+.account .btn.quiet { padding: 0.3rem 0.7rem; font-size: 0.72rem; }
+
+.account-form {
+  display: flex;
+  gap: 0.4rem;
+  align-items: center;
+}
+.account-form input {
+  width: 11rem;
+  padding: 0.35rem 0.5rem;
+  font-size: 0.78rem;
+}
+.account-form .btn { padding: 0.35rem 0.7rem; font-size: 0.72rem; }
+
 /* ---------- hero ---------- */
 
 .hero {
@@ -252,7 +281,7 @@ blockquote {
   margin-top: 1.1rem;
 }
 
-textarea, input[type="text"] {
+textarea, input[type="text"], input[type="email"] {
   width: 100%;
   background: var(--ink);
   color: var(--parchment);
@@ -263,7 +292,7 @@ textarea, input[type="text"] {
   padding: 0.7rem 0.85rem;
   resize: vertical;
 }
-textarea:focus, input[type="text"]:focus {
+textarea:focus, input[type="text"]:focus, input[type="email"]:focus {
   outline: none;
   border-color: var(--gold);
 }

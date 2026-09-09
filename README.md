@@ -39,4 +39,15 @@ Faster alternative with no account: drag the unzipped folder onto `app.netlify.c
 
 ## Data
 
-The journal lives in browser localStorage under the key `hf_journal_v1`. It never leaves the device. Clearing browser data deletes it — use Export Markdown for anything worth keeping.
+The journal always lives in browser localStorage under the key `hf_journal_v1` first. Clearing browser data deletes the local copy — use Export Markdown for anything worth keeping.
+
+Signing in (optional, magic-link email, top right of every page) additionally syncs entries to a Supabase project, so a journal can follow you to another browser or device. Signing out clears the local copy on that device but leaves the account's data untouched in the cloud. Skip sign-in entirely and the journal behaves exactly as before: local-only, nowhere else.
+
+### Cloud sync setup (for anyone forking this)
+
+The Supabase project URL and anon public key are hardcoded in `js/store.js` — the anon key is meant to be public and is safe to commit; access control is enforced by Postgres row-level security, not by keeping the key secret. To point this at your own Supabase project:
+
+1. Create a free project at supabase.com.
+2. In the SQL editor, create a `journal_entries` table (`id text primary key`, `user_id uuid references auth.users`, `ts bigint`, `text text`, `tags text[]`, `source text`) with row-level security enabled and select/insert/delete policies scoped to `auth.uid() = user_id`.
+3. In Authentication → Providers, enable Email with magic links. In Authentication → URL Configuration, add this site's URL(s) to the allowed redirect list.
+4. Replace `HF_SUPABASE_URL` and `HF_SUPABASE_ANON_KEY` at the top of `js/store.js` with your project's values (Project Settings → API).
