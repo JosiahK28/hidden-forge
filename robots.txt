@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://josiahk28.github.io/hidden-forge/sitemap.xml

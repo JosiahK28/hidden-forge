@@ -109,7 +109,9 @@ body {
   font-size: 0.76rem;
   color: var(--parchment-45);
 }
-.account .btn.quiet { padding: 0.3rem 0.7rem; font-size: 0.72rem; }
+.account .btn.quiet, .account .btn.danger { padding: 0.3rem 0.7rem; font-size: 0.72rem; }
+
+.btn:disabled { opacity: 0.5; cursor: not-allowed; pointer-events: none; }
 
 .account-form {
   display: flex;
@@ -478,6 +480,38 @@ label.field:first-child { margin-top: 0; }
   padding: 2rem 1.5rem;
   text-align: center;
   color: var(--parchment-45);
+}
+
+.search-row { margin: 0 0 1.1rem; }
+
+/* ---------- audit trend ---------- */
+
+.trend-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.75rem;
+  margin-bottom: 0.6rem;
+  font-family: var(--font-mono);
+  font-size: 0.76rem;
+}
+.trend-label {
+  width: 5.5rem;
+  flex-shrink: 0;
+  color: var(--parchment-45);
+}
+.trend-track {
+  flex: 1;
+  min-width: 6rem;
+  height: 0.55rem;
+  background: var(--ink-soft);
+  border: 1px solid var(--iron-line);
+}
+.trend-bar { height: 100%; background: var(--gold); }
+.trend-score {
+  flex-shrink: 0;
+  color: var(--parchment-70);
+  white-space: nowrap;
 }
 
 /* ---------- footer ---------- */
