@@ -24,13 +24,23 @@
 <header class="site-header">
   <div class="shell">
     <a class="wordmark" href="index.html">The Hidden <span>Forge</span></a>
-    <nav class="site-nav" aria-label="Primary">
-      <a href="index.html">Home</a><span class="sep">/</span>
-      <a href="creed.html" aria-current="page">Creed</a><span class="sep">/</span>
-      <a href="lab.html">Lab</a><span class="sep">/</span>
-      <a href="manifesto.html">Manifesto</a><span class="sep">/</span>
-      <a href="journal.html">Journal</a>
-    </nav>
+    <div class="nav-account">
+      <nav class="site-nav" aria-label="Primary">
+        <a href="index.html">Home</a><span class="sep">/</span>
+        <a href="creed.html" aria-current="page">Creed</a><span class="sep">/</span>
+        <a href="lab.html">Lab</a><span class="sep">/</span>
+        <a href="manifesto.html">Manifesto</a><span class="sep">/</span>
+        <a href="journal.html">Journal</a>
+      </nav>
+      <div class="account" id="hf-account">
+        <span id="hf-account-status">Guest</span>
+        <button type="button" class="btn quiet" id="hf-account-toggle">Sign in</button>
+        <form class="account-form" id="hf-account-form" hidden>
+          <input type="email" id="hf-account-email" placeholder="you@email.com" aria-label="Email for sign-in link" required>
+          <button type="submit" class="btn">Send link</button>
+        </form>
+      </div>
+    </div>
   </div>
 </header>
 
@@ -155,6 +165,7 @@
   <div class="shell">The Hidden Forge — built and maintained by hand.</div>
 </footer>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script src="js/store.js"></script>
 <script src="js/creed.js"></script>
 </body>

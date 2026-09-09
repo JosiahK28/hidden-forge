@@ -24,13 +24,23 @@
 <header class="site-header">
   <div class="shell">
     <a class="wordmark" href="index.html">The Hidden <span>Forge</span></a>
-    <nav class="site-nav" aria-label="Primary">
-      <a href="index.html" aria-current="page">Home</a><span class="sep">/</span>
-      <a href="creed.html">Creed</a><span class="sep">/</span>
-      <a href="lab.html">Lab</a><span class="sep">/</span>
-      <a href="manifesto.html">Manifesto</a><span class="sep">/</span>
-      <a href="journal.html">Journal</a>
-    </nav>
+    <div class="nav-account">
+      <nav class="site-nav" aria-label="Primary">
+        <a href="index.html" aria-current="page">Home</a><span class="sep">/</span>
+        <a href="creed.html">Creed</a><span class="sep">/</span>
+        <a href="lab.html">Lab</a><span class="sep">/</span>
+        <a href="manifesto.html">Manifesto</a><span class="sep">/</span>
+        <a href="journal.html">Journal</a>
+      </nav>
+      <div class="account" id="hf-account">
+        <span id="hf-account-status">Guest</span>
+        <button type="button" class="btn quiet" id="hf-account-toggle">Sign in</button>
+        <form class="account-form" id="hf-account-form" hidden>
+          <input type="email" id="hf-account-email" placeholder="you@email.com" aria-label="Email for sign-in link" required>
+          <button type="submit" class="btn">Send link</button>
+        </form>
+      </div>
+    </div>
   </div>
 </header>
 
@@ -47,7 +57,7 @@
 
     <div class="section">
       <p>A forge is not a museum. Nothing here is finished. The creed gets audited, the manifesto gets excerpted and argued with, and the failures get written down where they can be counted.</p>
-      <p>Everything you write on this site stays in your browser. No account, no server, no one reading over your shoulder.</p>
+      <p>Everything you write lands in this browser first, always. An account is optional — sign in and it also follows you to your other devices. Skip it and it stays here, on this browser, and nowhere else.</p>
     </div>
 
     <div class="divider"><span class="mark">&#9670;</span></div>
@@ -80,7 +90,7 @@
 
     <div class="section">
       <div class="callout">
-        <strong>How this is built.</strong> Hand-written HTML, CSS and JavaScript. No framework, no build step, no backend. The journal uses your browser's local storage — clear your browser data and it's gone, so export anything you want to keep.
+        <strong>How this is built.</strong> Hand-written HTML, CSS and JavaScript. No framework, no build step. The journal uses your browser's local storage by default — clear your browser data and it's gone, so export anything you want to keep. Sign in and entries also sync to an account, so a cleared browser or a new device isn't the end of them.
       </div>
     </div>
 
@@ -91,5 +101,7 @@
   <div class="shell">The Hidden Forge — built and maintained by hand.</div>
 </footer>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="js/store.js"></script>
 </body>
 </html>

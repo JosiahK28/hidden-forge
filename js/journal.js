@@ -115,4 +115,6 @@ document.getElementById('export').addEventListener('click', (e) => {
   if (!ok) hfFlash(e.target, 'Nothing to export');
 });
 
+window.addEventListener('hf:updated', render);
+
 render();
