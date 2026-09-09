@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Journal — The Hidden Forge</title>
+<meta name="description" content="Every audit, strike and captured passage — tagged, filterable, exportable.">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="shell">
+    <a class="wordmark" href="index.html">The Hidden <span>Forge</span></a>
+    <nav class="site-nav" aria-label="Primary">
+      <a href="index.html">Home</a><span class="sep">/</span>
+      <a href="creed.html">Creed</a><span class="sep">/</span>
+      <a href="lab.html">Lab</a><span class="sep">/</span>
+      <a href="manifesto.html">Manifesto</a><span class="sep">/</span>
+      <a href="journal.html" aria-current="page">Journal</a>
+    </nav>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="shell">
+    <span class="kicker">// kept in this browser, nowhere else</span>
+    <h1>The Journal</h1>
+    <p class="lede">A record you cannot argue with later. Audits, strikes and captured passages land here automatically; write directly into it whenever something is worth keeping.</p>
+  </div>
+</section>
+
+<main>
+  <div class="shell">
+
+    <div class="section">
+      <h2>Write an entry</h2>
+      <div class="card">
+        <label class="field" for="new-text">Entry</label>
+        <textarea id="new-text" rows="5" placeholder="What happened, and what you intend to do about it."></textarea>
+        <label class="field" for="new-tags">Tags</label>
+        <input type="text" id="new-tags" placeholder="discipline, work, prayer">
+        <div class="btn-row">
+          <button type="button" class="btn" id="new-save">Add entry</button>
+          <span class="status" id="new-status"></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="divider"><span class="mark">&#9670;</span></div>
+
+    <div class="section">
+      <div class="btn-row" style="margin-top:0; justify-content:space-between;">
+        <h2 style="margin:0;">The record</h2>
+        <button type="button" class="btn quiet" id="export">Export Markdown</button>
+      </div>
+
+      <div class="chip-row" id="filters"></div>
+      <div id="entries"></div>
+    </div>
+
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="shell">The Hidden Forge — built and maintained by hand.</div>
+</footer>
+
+<script src="js/store.js"></script>
+<script src="js/journal.js"></script>
+</body>
+</html>
