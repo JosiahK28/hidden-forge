@@ -111,8 +111,8 @@ function renderAuditTrend() {
   const audits = HF.all()
     .filter(e => e.source === 'creed-audit')
     .map(e => {
-      const m = e.text.match(/^Creed Audit — (\d+)\/45 · (.+)$/m);
-      return m ? { ts: e.ts, score: Number(m[1]), title: m[2] } : null;
+      const m = e.text.match(/^Creed Audit — (\d+)\/(\d+) · (.+)$/m);
+      return m ? { ts: e.ts, score: Number(m[1]), max: Number(m[2]), title: m[3] } : null;
     })
     .filter(Boolean)
     .sort((a, b) => a.ts - b.ts);
@@ -137,13 +137,13 @@ function renderAuditTrend() {
     track.className = 'trend-track';
     const bar = document.createElement('div');
     bar.className = 'trend-bar';
-    bar.style.width = `${Math.round((a.score / 45) * 100)}%`;
+    bar.style.width = `${Math.round((a.score / a.max) * 100)}%`;
     track.appendChild(bar);
     row.appendChild(track);
 
     const score = document.createElement('span');
     score.className = 'trend-score';
-    score.textContent = `${a.score}/45 · ${a.title}`;
+    score.textContent = `${a.score}/${a.max} · ${a.title}`;
     row.appendChild(score);
 
     auditTrendEl.appendChild(row);
