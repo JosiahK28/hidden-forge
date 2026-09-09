@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Creed — The Hidden Forge</title>
+<meta name="description" content="The Chimera Creed — pillars written to be tested, not admired.">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="shell">
+    <a class="wordmark" href="index.html">The Hidden <span>Forge</span></a>
+    <nav class="site-nav" aria-label="Primary">
+      <a href="index.html">Home</a><span class="sep">/</span>
+      <a href="creed.html" aria-current="page">Creed</a><span class="sep">/</span>
+      <a href="lab.html">Lab</a><span class="sep">/</span>
+      <a href="manifesto.html">Manifesto</a><span class="sep">/</span>
+      <a href="journal.html">Journal</a>
+    </nav>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="shell">
+    <span class="kicker">// also called Man's Iron Creed, The Synthesis of Order</span>
+    <h1>The Chimera Creed</h1>
+    <p class="lede">A creed is only worth stating if it can be failed. These pillars are written to be tested against a week, a decision, a bad morning — not admired on a wall.</p>
+  </div>
+</section>
+
+<main>
+  <div class="shell">
+
+    <div class="section">
+      <div class="callout">
+        <strong>Draft scaffolding.</strong> The two pillars below are placeholders in the target voice, so the page has real structure to build against. Swap in your essays; add pillars by copying a <code>.pillar</code> block and extending the list in <code>js/creed.js</code>.
+      </div>
+    </div>
+
+    <div class="section">
+
+      <div class="pillar" id="pillar-2">
+        <span class="pillar-num">PILLAR II</span>
+        <h3>Radical Accountability</h3>
+        <p>The excuse is always available and always cheap. It costs nothing to say the market failed you, the father failed you, the system failed you — and it buys nothing either. Every hour spent proving you were wronged is an hour not spent becoming someone harder to wrong.</p>
+        <p>Accountability is not the claim that you caused everything. It is the claim that you will answer for your portion of it, and that you will find your portion even when nobody makes you look.</p>
+        <blockquote>The man who has an explanation for every failure has built a machine that manufactures more of them.</blockquote>
+        <p>The steelman deserves air: some men really are crushed by forces they did not choose and could not have survived. Poverty is not a character flaw. A childhood spent under a cruel roof is not a decision. To pretend otherwise is not strength, it is a lie told loudly. But the honest version of that truth ends in the same place — the wound explains the shape of the man; it does not absolve him of carrying it.</p>
+        <p><strong>Protocol.</strong> Name one thing this week that went badly. Write the sentence you'd tell your friends. Then write the sentence you'd tell a judge who could see everything. Act on the second one.</p>
+      </div>
+
+      <div class="pillar" id="pillar-3">
+        <span class="pillar-num">PILLAR III</span>
+        <h3>Dominion of Self</h3>
+        <p>You cannot govern a household, a company, or a country while losing a nightly argument with your own appetite. Dominion begins in the smallest jurisdiction there is: the four feet of space you occupy at 6am.</p>
+        <p>Discipline is badly sold. It is not presented as freedom; it is presented as punishment, a diet of grey food and cold water. But every appetite you cannot refuse is a hand on your collar. The disciplined man is not the one who wants less. He is the one whose wants no longer issue orders.</p>
+        <blockquote>Rule the room you're standing in before you ask for a bigger one.</blockquote>
+        <p><strong>Protocol.</strong> Pick the appetite that most reliably wins. Set one boundary this week that it cannot cross, narrow enough that failure would be unambiguous. Record the result in the journal, win or loss.</p>
+      </div>
+
+    </div>
+
+    <div class="divider"><span class="mark">&#9670;</span></div>
+
+    <div class="section">
+      <h2>Creed Audit</h2>
+      <p>Nine statements. Rate each one honestly for the past seven days — not for the man you intend to be. One is never; five is consistently.</p>
+
+      <form id="audit" class="card">
+        <div id="audit-items"></div>
+        <div class="btn-row">
+          <button type="button" class="btn" id="audit-score">Score the audit</button>
+          <button type="button" class="btn quiet" id="audit-reset">Clear</button>
+          <span class="status" id="audit-status">0 of 9 answered</span>
+        </div>
+      </form>
+
+      <div class="verdict" id="verdict" hidden>
+        <span class="score" id="verdict-score">—</span>
+        <h3 id="verdict-title">—</h3>
+        <p id="verdict-body">—</p>
+        <p id="verdict-weak" class="hint">—</p>
+        <div class="btn-row">
+          <button type="button" class="btn" id="audit-save">Save to journal</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="shell">The Hidden Forge — built and maintained by hand.</div>
+</footer>
+
+<script src="js/store.js"></script>
+<script src="js/creed.js"></script>
+</body>
+</html>

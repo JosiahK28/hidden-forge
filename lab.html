@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Lab — The Hidden Forge</title>
+<meta name="description" content="Two instruments: Strike the Anvil turns a struggle into an act. The Red Pill Decoder strips a comfortable phrase back to its meaning.">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="shell">
+    <a class="wordmark" href="index.html">The Hidden <span>Forge</span></a>
+    <nav class="site-nav" aria-label="Primary">
+      <a href="index.html">Home</a><span class="sep">/</span>
+      <a href="creed.html">Creed</a><span class="sep">/</span>
+      <a href="lab.html" aria-current="page">Lab</a><span class="sep">/</span>
+      <a href="manifesto.html">Manifesto</a><span class="sep">/</span>
+      <a href="journal.html">Journal</a>
+    </nav>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="shell">
+    <span class="kicker">// instruments, not affirmations</span>
+    <h1>The Lab</h1>
+    <p class="lede">Two tools. One takes a live struggle and refuses to let you leave it as a feeling. The other takes a phrase you've been repeating and asks what it is protecting.</p>
+  </div>
+</section>
+
+<main>
+  <div class="shell">
+
+    <div class="section">
+      <h2>Strike the Anvil</h2>
+      <p>A struggle held in the head circles forever. A struggle written down has edges, and edges can be hit. Five questions, one act, one deadline.</p>
+
+      <div class="card">
+        <div class="step" data-step="1">
+          <h3>Name the strike</h3>
+          <label class="field" for="anvil-1">What actually happened? Facts, no verdicts.</label>
+          <textarea id="anvil-1" rows="3" placeholder="On Tuesday I said I'd send the draft and didn't."></textarea>
+        </div>
+
+        <div class="step" data-step="2">
+          <h3>Name the story</h3>
+          <label class="field" for="anvil-2">What are you telling yourself about it?</label>
+          <textarea id="anvil-2" rows="3" placeholder="That I'm not ready, that it needs another pass."></textarea>
+        </div>
+
+        <div class="step" data-step="3">
+          <h3>Find your portion</h3>
+          <label class="field" for="anvil-3">Strip out everything outside your control. What is left that is yours?</label>
+          <textarea id="anvil-3" rows="3" placeholder="I chose to reread instead of send. That was mine."></textarea>
+        </div>
+
+        <div class="step" data-step="4">
+          <h3>Name the next act</h3>
+          <label class="field" for="anvil-4">One act. Small enough to be certain, real enough to cost something.</label>
+          <textarea id="anvil-4" rows="2" placeholder="Send the draft as it stands, no further edits."></textarea>
+        </div>
+
+        <div class="step" data-step="5">
+          <h3>Set the deadline</h3>
+          <label class="field" for="anvil-5">When? A date, not "soon".</label>
+          <input type="text" id="anvil-5" placeholder="Tomorrow, before 9am.">
+        </div>
+
+        <label class="field" for="anvil-tags">Tags</label>
+        <input type="text" id="anvil-tags" placeholder="discipline, work">
+
+        <div class="btn-row">
+          <button type="button" class="btn" id="anvil-save">Strike</button>
+          <button type="button" class="btn quiet" id="anvil-clear">Clear</button>
+          <span class="status" id="anvil-status"></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="divider"><span class="mark">&#9670;</span></div>
+
+    <div class="section">
+      <h2>Red Pill Decoder</h2>
+      <p>Comfortable language is load-bearing. It holds up a decision you'd rather not inspect. Type a phrase you've caught yourself using and see what sits underneath it.</p>
+
+      <div class="card">
+        <label class="field" for="decode-in">The phrase</label>
+        <input type="text" id="decode-in" placeholder="I'm waiting for the right time">
+        <div class="btn-row">
+          <button type="button" class="btn" id="decode-go">Decode</button>
+          <span class="status">or try one:</span>
+        </div>
+        <div class="chip-row" id="decode-samples"></div>
+
+        <div class="decode-out" id="decode-out" hidden>
+          <p class="surface" id="decode-surface"></p>
+          <p class="beneath" id="decode-beneath"></p>
+          <div class="btn-row">
+            <button type="button" class="btn quiet" id="decode-save">Save to journal</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="shell">The Hidden Forge — built and maintained by hand.</div>
+</footer>
+
+<script src="js/store.js"></script>
+<script src="js/lab.js"></script>
+</body>
+</html>
