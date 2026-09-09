@@ -116,6 +116,7 @@ body {
   gap: 0.4rem;
   align-items: center;
 }
+.account-form[hidden] { display: none; }
 .account-form input {
   width: 11rem;
   padding: 0.35rem 0.5rem;
