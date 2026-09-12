@@ -30,7 +30,7 @@ Faster alternative with no account: drag the unzipped folder onto `app.netlify.c
 ## Content status
 
 - **Creed:** all seven pillars are complete — the verbatim text of the Synthesis of Order from the source Obsidian vault, not paraphrased.
-- **Manifesto:** 3 of 14 planned chapters are drafted (Chapters I–III). The rest are still to come.
+- **Manifesto:** 6 of 14 planned chapters are drafted (Chapters I–VI). The rest are still to come.
 
 ## Editing content
 
