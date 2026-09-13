@@ -65,8 +65,11 @@ respected at the bottom of the stylesheet — don't add animation that bypasses 
 - **Adding a manifesto passage**: wrap it in
   `<p class="excerpt" tabindex="0" role="button">`. The capture system picks it up
   with no further wiring.
-- **Adding a decoder phrase**: append to `PHRASE_MAP` in `js/lab.js`. `match` is an
-  array of lowercase substrings; `beneath` is the decoding.
+- **Adding a decoder phrase**: the Red Pill Decoder is a static, no-input list —
+  append a `{ surface, beneath }` entry to the right group's `phrases` array in
+  `DECODER_GROUPS` in `js/lab.js` (or add a new group for a new subject). Each
+  group renders as its own collapsed `<details>` dropdown so the page stays a
+  reasonable scroll length.
 - No page currently has placeholder/"draft scaffolding" prose — all live content is
   either sourced from the Obsidian vault or explicitly approved rewritten prose.
   If you add a placeholder `.callout` again, remove it once real content lands.

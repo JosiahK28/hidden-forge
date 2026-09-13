@@ -44,109 +44,136 @@ document.getElementById('anvil-clear').addEventListener('click', () => {
 
 /* ---------- Red Pill Decoder ---------- */
 
-const PHRASE_MAP = [
+const DECODER_GROUPS = [
   {
-    match: ['right time', 'not the right time', 'timing isn\'t right', 'when things settle'],
-    beneath: 'There is no right time; there is only a time when the cost of starting feels lower than it does today. Waiting does not lower that cost — it raises it, and calls the increase prudence.'
+    label: 'Masculinity',
+    phrases: [
+      {
+        surface: '“Toxic masculinity”',
+        beneath: 'Cruelty, control, and cowardice dressed as strength are real, and calling them out costs the coward nothing to admit. But the phrase is usually aimed wider than that — at strength itself, so it never has to be pointed anywhere. What\'s toxic is force without dominion of self; ask whether the fix on offer is discipline or disarmament.'
+      },
+      {
+        surface: '“Be an alpha”',
+        beneath: 'Dominance is easy to fake and exhausting to maintain, and plenty of "alphas" are just loud men nobody has stood up to yet. Rank answers to nothing above itself — it\'s the biggest animal in the room, not the most just one. The standard was never top of the hierarchy; it was fit to lead one, which is a harder and different test.'
+      },
+      {
+        surface: '“The patriarchy is the problem”',
+        beneath: 'Some men have used authority as a shield for abuse — that\'s a real, old failure, not a myth invented to flatter anyone. But the pattern in front of you right now is usually the opposite one: not too much fatherhood, but too little — men who left, checked out, or never showed up to hold the line at all. Name which failure you\'re actually looking at before you diagnose it.'
+      },
+      {
+        surface: '“Emotions are weakness”',
+        beneath: 'Stoicism gets misquoted into anesthesia. The ancients who wrote it felt everything — grief, rage, longing — and governed it anyway; suppression was never the discipline, response was. An emotion you can\'t name runs you from underneath. One you can name is a fact you can act on.'
+      }
+    ]
   },
   {
-    match: ['not ready', 'need more experience', 'need to learn more', 'once i\'m qualified'],
-    beneath: 'Readiness is manufactured by doing, not granted before it. What you are calling preparation is a place to stand where nobody can grade you.'
+    label: 'Self-Help & Hustle Culture',
+    phrases: [
+      {
+        surface: '“Follow your heart” / “live your truth”',
+        beneath: 'The heart is a real instrument, and ignoring it entirely produces its own kind of dishonesty. But it is not sovereign — it is fallen, it wants comfort more often than it wants right, and it will rationalize either with equal conviction. Let it inform the decision. Do not let it cast the deciding vote.'
+      },
+      {
+        surface: '“Just be a good person”',
+        beneath: 'Nobody sets out to be the villain of their own story, which is exactly the problem — "good" measured against your own mood will always clear the bar you set it. The word needs a standard outside yourself or it is decoration wearing morality\'s clothes. Ask what you\'d have to change if the standard weren\'t yours to grade.'
+      },
+      {
+        surface: '“Chase your dreams”',
+        beneath: 'Some dreams are worth the whole of a life spent on them — that\'s not in question. What\'s in question is whether this one has ever been tested by a single hard morning of actual discipline, or whether it\'s stayed a dream because a dream can\'t fail. Put one week of unglamorous work against it and see if it survives contact.'
+      },
+      {
+        surface: '“Grind harder, no excuses”',
+        beneath: 'Effort matters and laziness is a real vice, not a myth. But motion is not the same as direction — a man can grind sixty hours a week toward nothing he\'d defend and call it discipline because it\'s exhausting. Ask what the grind is actually building, not just whether it hurts enough to count.'
+      },
+      {
+        surface: '“Manifest it” / “stay positive”',
+        beneath: 'Attitude shapes outcomes more than cynics admit — that much is true. But refusing to see the terrain because the view is unpleasant isn\'t optimism, it\'s a liability wearing optimism\'s clothes. See the ground exactly as it is, then decide to move anyway; that\'s courage. Refusing to look is just hope with its eyes shut.'
+      }
+    ]
   },
   {
-    match: ['too busy', 'no time', 'when i have time', 'swamped'],
-    beneath: 'You have the time. You have assigned it elsewhere. Say what it went to instead — that sentence is the real one, and it is usually survivable.'
+    label: 'Politics & Systems',
+    phrases: [
+      {
+        surface: '“The system is rigged, so why bother”',
+        beneath: 'Some systems are rigged. Saying so plainly is realism, not paranoia. But "why bother" is the same surrender as "it is what it is," wearing a political coat — the rigging becomes the reason to stop instead of the reason to move carefully. Name the one part of the system that still answers to your effort, and work that part.'
+      },
+      {
+        surface: '“Vote and things will change”',
+        beneath: 'A vote costs little and changes less than it\'s sold as; treating it as the whole of civic duty is a way to feel engaged without being responsible for anything. Renewal runs bottom-up — a household in order, a tribe that holds, a community that notices — long before it runs through a ballot. Build the thing your ballot can\'t build for you.'
+      },
+      {
+        surface: '“God helps those who help themselves”',
+        beneath: 'It sounds biblical and isn\'t — it\'s Franklin, not scripture — and the mix-up matters because it reverses the order. Self-reliance answering to nothing above it is just ambition with a halo painted on. Sovereignty comes first; the helping yourself comes after, and in service of something, not instead of it.'
+      }
+    ]
   },
   {
-    match: ['they don\'t understand', 'nobody gets it', 'no one understands'],
-    beneath: 'Possibly true. Also the most comfortable explanation available, because it requires nothing of you. Test it: explain it once more, plainly, to someone who has no reason to flatter you.'
-  },
-  {
-    match: ['i\'m just being realistic', 'being realistic', 'just realistic'],
-    beneath: 'Realism describes constraints. This describes a ceiling you installed yourself and would rather not test. Name the constraint precisely — if you can\'t, it isn\'t one.'
-  },
-  {
-    match: ['it is what it is', 'nothing i can do', 'out of my control'],
-    beneath: 'Something in it is yours. Not all of it — that would be a different lie. Find the smallest part that answers to you and act only on that.'
-  },
-  {
-    match: ['i\'ll start monday', 'start tomorrow', 'start next week', 'from monday'],
-    beneath: 'A future start date is a way to feel like the man who started without becoming him. The version of you who begins on Monday is the version who could begin tonight.'
-  },
-  {
-    match: ['i don\'t care', 'doesn\'t bother me', 'i\'m over it'],
-    beneath: 'Indifference is loud when it is real and louder when it is not. If it needed saying out loud, it needs looking at.'
-  },
-  {
-    match: ['i work better under pressure', 'i need the deadline'],
-    beneath: 'You work under pressure. Whether it is better has never been tested, because you have never given the alternative a fair trial.'
-  },
-  {
-    match: ['self care', 'i deserve a break', 'being kind to myself'],
-    beneath: 'Rest earned after work restores you. Rest taken instead of work is a debt with your name on it. Which one is this? You already know.'
-  },
-  {
-    match: ['everyone does it', 'that\'s just how it is', 'normal these days'],
-    beneath: 'Prevalence is not permission. The question was never what everyone does — it was what you would still defend if it were only you.'
-  },
-  {
-    match: ['i\'m trying my best', 'doing all i can'],
-    beneath: 'Best is a measurable claim. Write down what you actually did this week and read it back. If the claim survives, keep it and stop apologising.'
+    label: 'Loyalty & Tribe',
+    phrases: [
+      {
+        surface: '“Whatever it takes for my family/tribe”',
+        beneath: 'Fierce loyalty to your own is not the flaw — a man who won\'t fight for what\'s his is missing something, not exceeding it. The flaw is loyalty with no discernment left in it, defending the tribe\'s worst the same as its best because it\'s yours. Ask whether you\'re protecting what\'s good in them, or just what\'s yours.'
+      },
+      {
+        surface: '“It takes a village”',
+        beneath: 'A village helps — real community catches what one man alone would drop. But it has quietly become the sentence that lets a father\'s specific job go unclaimed, spread thin enough across "the village" that no one part of it is actually responsible. Name the one thing here that is yours alone to carry, village or not.'
+      },
+      {
+        surface: '“Men and women are interchangeable”',
+        beneath: 'Equal in worth, categorically — that\'s not the argument, and anyone who makes it one is arguing against a position nobody serious holds. Equal does not mean identical; complementary roles aren\'t a hierarchy of value, they\'re a division of labor built for what each is actually built for. The question was never who\'s worth more. It was who\'s built for what.'
+      }
+    ]
   }
 ];
 
-const FALLBACKS = [
-  'No entry for that phrase yet — so decode it yourself with three questions. What would be true if this sentence were false? What does keeping it save you from? What would you do this week if you dropped it?',
-  'That one is not in the map. Try the test that works on all of them: does this sentence describe the world, or does it describe a door you would rather not open?',
-  'Unmapped. Ask it directly — who benefits from you believing this? If the answer is the version of you that wants to stay put, you have your decoding.'
-];
+const decoderListEl = document.getElementById('decoder-list');
 
-const decodeIn      = document.getElementById('decode-in');
-const decodeOut     = document.getElementById('decode-out');
-const decodeSurface = document.getElementById('decode-surface');
-const decodeBeneath = document.getElementById('decode-beneath');
-const samplesEl     = document.getElementById('decode-samples');
+DECODER_GROUPS.forEach(group => {
+  const details = document.createElement('details');
+  details.className = 'subject';
 
-const SAMPLES = [
-  'I\'m waiting for the right time',
-  'I\'m not ready yet',
-  'I\'m too busy',
-  'It is what it is',
-  'I\'ll start Monday'
-];
+  const summary = document.createElement('summary');
+  summary.textContent = group.label;
+  details.appendChild(summary);
 
-SAMPLES.forEach(s => {
-  const chip = document.createElement('button');
-  chip.type = 'button';
-  chip.className = 'chip';
-  chip.textContent = s;
-  chip.addEventListener('click', () => { decodeIn.value = s; decode(); });
-  samplesEl.appendChild(chip);
-});
+  const body = document.createElement('div');
+  body.className = 'subject-body';
 
-function decode() {
-  const raw = decodeIn.value.trim();
-  if (!raw) return;
-  const needle = raw.toLowerCase();
+  group.phrases.forEach(phrase => {
+    const entry = document.createElement('div');
+    entry.className = 'decode-entry';
 
-  const hit = PHRASE_MAP.find(p => p.match.some(m => needle.includes(m)));
+    const surface = document.createElement('p');
+    surface.className = 'surface';
+    surface.textContent = phrase.surface;
+    entry.appendChild(surface);
 
-  decodeSurface.textContent = `You said: “${raw}”`;
-  if (hit) {
-    decodeBeneath.textContent = hit.beneath;
-    decodeBeneath.classList.remove('miss');
-  } else {
-    decodeBeneath.textContent = FALLBACKS[Math.floor(Math.random() * FALLBACKS.length)];
-    decodeBeneath.classList.add('miss');
-  }
-  decodeOut.hidden = false;
-}
+    const beneath = document.createElement('p');
+    beneath.className = 'beneath';
+    beneath.textContent = phrase.beneath;
+    entry.appendChild(beneath);
 
-document.getElementById('decode-go').addEventListener('click', decode);
-decodeIn.addEventListener('keydown', (e) => { if (e.key === 'Enter') decode(); });
+    const btnRow = document.createElement('div');
+    btnRow.className = 'btn-row';
+    const saveBtn = document.createElement('button');
+    saveBtn.type = 'button';
+    saveBtn.className = 'btn quiet';
+    saveBtn.textContent = 'Save to journal';
+    saveBtn.addEventListener('click', () => {
+      HF.add({
+        text: `Decoded: ${phrase.surface}\n\n${phrase.beneath}`,
+        tags: ['decoder'],
+        source: 'decoder'
+      });
+      hfFlash(saveBtn, 'Saved to journal');
+    });
+    btnRow.appendChild(saveBtn);
+    entry.appendChild(btnRow);
 
-document.getElementById('decode-save').addEventListener('click', (e) => {
-  const text = `Decoded: “${decodeIn.value.trim()}”\n\n${decodeBeneath.textContent}`;
-  HF.add({ text, tags: ['decoder'], source: 'decoder' });
-  hfFlash(e.target, 'Saved to journal');
+    body.appendChild(entry);
+  });
+
+  details.appendChild(body);
+  decoderListEl.appendChild(details);
 });
