@@ -49,7 +49,7 @@
   <div class="shell">
     <span class="kicker">// a working philosophy, kept in public</span>
     <h1>Character is not declared. It is hammered.</h1>
-    <p class="lede">Most philosophy is decoration — admired on a wall, never carried into a bad morning. This site holds the other kind: claims sharp enough to cut you if you're wrong about yourself.</p>
+    <p class="lede">Most philosophy is decoration — a framed quote, agreed with and never applied. This is the other kind: a creed you're scored against, a record that remembers what you actually did, and claims sharp enough to cut you if you're wrong about yourself.</p>
   </div>
 </section>
 
@@ -58,7 +58,7 @@
 
     <div class="section">
       <p>A forge is not a museum. Nothing here is finished. The creed gets audited, the manifesto gets excerpted and argued with, and the failures get written down where they can be counted.</p>
-      <p>Everything you write lands in this browser first, always. An account is optional — sign in and it also follows you to your other devices. Skip it and it stays here, on this browser, and nowhere else.</p>
+      <p>Everything you write lands in this browser first, always — that's also the only way it can disappear. Sign in when losing it stops being acceptable, not before.</p>
     </div>
 
     <div class="divider"><span class="mark">&#9670;</span></div>
@@ -66,33 +66,38 @@
     <div class="section">
       <h2>Four rooms</h2>
 
-      <a class="route" href="creed.html">
-        <h3>The Creed</h3>
-        <p>The pillars, stated plainly enough to be failed. Rate yourself against each one and get a number you can't argue with.</p>
-      </a>
+      <div class="rooms">
+        <a class="room" href="creed.html">
+          <span class="room-num">01</span>
+          <h3>The Creed</h3>
+          <p>The pillars, stated plainly enough to be failed. Rate yourself against each one and get a number you can't argue with.</p>
+        </a>
 
-      <a class="route" href="lab.html">
-        <h3>The Lab</h3>
-        <p>Strike the Anvil turns a live struggle into five hard questions and one committed act. The Red Pill Decoder strips comfortable phrases back to what they actually mean.</p>
-      </a>
+        <a class="room" href="lab.html">
+          <span class="room-num">02</span>
+          <h3>The Lab</h3>
+          <p>Strike the Anvil turns a live struggle into five hard questions and one act you commit to before closing the tab. The Red Pill Decoder strips comfortable phrases back to what they mean.</p>
+        </a>
 
-      <a class="route" href="manifesto.html">
-        <h3>The Manifesto</h3>
-        <p>Chapters from <em>Threads of Independence</em>. Click any passage that lands and it drops into your insight drawer.</p>
-      </a>
+        <a class="room" href="manifesto.html">
+          <span class="room-num">03</span>
+          <h3>The Manifesto</h3>
+          <p>Chapters from <em>Threads of Independence</em>. Click any passage that lands and it drops into your insight drawer.</p>
+        </a>
 
-      <a class="route" href="journal.html">
-        <h3>The Journal</h3>
-        <p>Every audit, every strike, every captured line — tagged, filterable, exportable to Markdown.</p>
-      </a>
+        <a class="room" href="journal.html">
+          <span class="room-num">04</span>
+          <h3>The Journal</h3>
+          <p>Every audit, every strike, every captured line — tagged, filterable, exportable to Markdown.</p>
+        </a>
+      </div>
     </div>
 
     <div class="divider"><span class="mark">&#9670;</span></div>
 
     <div class="section">
-      <div class="callout">
-        <strong>How this is built.</strong> Hand-written HTML, CSS and JavaScript. No framework, no build step. The journal uses your browser's local storage by default — clear your browser data and it's gone, so export anything you want to keep. Sign in and entries also sync to an account, so a cleared browser or a new device isn't the end of them.
-      </div>
+      <h2>The record, so far</h2>
+      <div id="hf-record"></div>
     </div>
 
   </div>
@@ -104,5 +109,6 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script src="js/store.js"></script>
+<script src="js/index.js"></script>
 </body>
 </html>
