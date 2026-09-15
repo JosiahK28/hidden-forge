@@ -38,7 +38,7 @@ Faster alternative with no account: drag the unzipped folder onto `app.netlify.c
 
 **Add a manifesto chapter.** Paste the text into `manifesto.html` and wrap each capturable passage in `<p class="excerpt" tabindex="0" role="button">`. No further wiring needed.
 
-**Add decoder phrases.** Append to `PHRASE_MAP` in `js/lab.js`. Each entry needs `match` (an array of lowercase substrings) and `beneath` (the decoding).
+**Add decoder phrases.** The Red Pill Decoder is a static, no-input list. Append a `{ surface, beneath }` entry to the right group's `phrases` array in `DECODER_GROUPS` in `js/lab.js` (or add a new group for a new subject). Each group renders as its own collapsed `<details>` dropdown.
 
 **Change the palette.** All colours are CSS variables at the top of `css/style.css`.
 
