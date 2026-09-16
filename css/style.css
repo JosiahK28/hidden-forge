@@ -467,6 +467,22 @@ label.field:first-child { margin-top: 0; }
 .excerpt:focus-visible { outline: 2px solid var(--gold-bright); outline-offset: 2px; }
 .excerpt.captured { border-left-color: var(--red-bright); background: var(--ink-card); }
 
+.excerpt.protocol {
+  border-left: 3px solid var(--gold);
+  background: var(--ink-soft);
+}
+.excerpt.protocol::before {
+  content: 'Protocol';
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--gold-bright);
+  margin-bottom: 0.4rem;
+}
+.excerpt.protocol.captured { border-left-color: var(--red-bright); background: var(--ink-card); }
+
 .drawer {
   position: fixed;
   right: 1.25rem;
