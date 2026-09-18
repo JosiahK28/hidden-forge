@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Third Brain — The Hidden Forge</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Source+Serif+4:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="css/style.css">
+<style>
+  /* This page's header must report its real height so .tb-wrap can size
+     itself to the remaining viewport — see js/third-brain.js. */
+  body { overflow: hidden; }
+  main { display: flex; flex-direction: column; }
+</style>
+</head>
+<body>
+
+<header class="site-header" id="tb-header">
+  <div class="shell wide">
+    <a class="wordmark" href="index.html">The Hidden <span>Forge</span></a>
+    <div class="nav-account">
+      <nav class="site-nav" aria-label="Primary">
+        <a href="index.html">Home</a><span class="sep">/</span>
+        <a href="creed.html">Creed</a><span class="sep">/</span>
+        <a href="lab.html">Lab</a><span class="sep">/</span>
+        <a href="manifesto.html">Manifesto</a><span class="sep">/</span>
+        <a href="journal.html">Journal</a><span class="sep">/</span>
+        <a href="third-brain.html" aria-current="page">Third Brain</a>
+      </nav>
+      <div class="account" id="hf-account">
+        <span id="hf-account-status">Guest</span>
+        <button type="button" class="btn quiet" id="hf-account-toggle">Sign in</button>
+        <button type="button" class="btn danger" id="hf-account-delete" hidden>Delete my data</button>
+        <form class="account-form" id="hf-account-form" hidden>
+          <input type="email" id="hf-account-email" placeholder="you@email.com" aria-label="Email for sign-in link" required>
+          <button type="submit" class="btn">Send link</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="tb-wrap" id="tb-wrap">
+    <svg id="tb-stage" viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid meet"></svg>
+
+    <div class="tb-gate" id="tb-gate">
+      <div class="card">
+        <p id="tb-gate-text">Checking your sign-in…</p>
+        <div class="btn-row" id="tb-gate-actions" hidden>
+          <button type="button" class="btn" id="tb-signin">Sign in</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="tb-hud tb-title" id="tb-title" hidden>Third Brain<span class="sub" id="tb-title-sub"></span></div>
+
+    <div class="tb-hud tb-search-wrap" id="tb-search-wrap" hidden>
+      <input id="tb-search" type="text" placeholder="Search principles, works…" autocomplete="off">
+      <div id="tb-search-count" class="tb-search-count"></div>
+    </div>
+
+    <div class="tb-hud tb-legend" id="tb-legend" hidden>
+      <div class="grp">
+        <div class="hd">Nodes</div>
+        <div class="row"><span class="dia" style="background:var(--tb-work-glow)"></span> a finished work</div>
+        <div class="row"><span class="dot" style="background:var(--parchment-45)"></span> a principle, by domain</div>
+      </div>
+      <div class="grp">
+        <div class="hd">Relations</div>
+        <div class="row"><span class="line" style="border-color:var(--rel-supports)"></span> supports</div>
+        <div class="row"><span class="line" style="border-color:var(--rel-extends)"></span> extends</div>
+        <div class="row"><span class="line" style="border-color:var(--rel-qualifies)"></span> qualifies</div>
+        <div class="row"><span class="line" style="border-color:var(--rel-contradicts)"></span> contradicts</div>
+      </div>
+      <div class="grp" style="margin-top:0.5rem; opacity:0.8;">drag · click to trace · scroll to zoom</div>
+    </div>
+
+    <div class="tb-hud tb-detail" id="tb-detail">
+      <div class="kicker" id="tb-detail-kicker">—</div>
+      <div class="label" id="tb-detail-label">—</div>
+      <div id="tb-detail-body"></div>
+    </div>
+
+    <div class="tb-hud tb-reset-hint" id="tb-reset-hint" hidden>click empty space to release</div>
+  </div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
+<script src="js/store.js"></script>
+<script src="js/third-brain.js"></script>
+</body>
+</html>

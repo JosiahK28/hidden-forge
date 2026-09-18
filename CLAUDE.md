@@ -11,12 +11,13 @@ Deployed on GitHub Pages from the `main` branch, root folder.
 - **Local storage remains the default and the fallback.** Every read/write goes
   through the `HF` store in `js/store.js`, never `localStorage` directly from a
   page script. Nothing should ever require an account to work.
-- **Backend is Supabase (auth + journal sync), and it is a deliberate, approved
+- **Backend is Supabase (auth + journal sync + the private vault dashboard), and it is a deliberate, approved
   exception** to "no backend," not accidental scope creep. Don't add any other
   backend or database. Every feature must keep working fully offline/signed-out.
-- **External dependencies:** the Google Fonts import in `css/style.css`, and the
-  Supabase JS CDN script loaded on every page before `store.js`. Don't add any
-  other CDN scripts without updating this file.
+- **External dependencies:** the Google Fonts import in `css/style.css`, the
+  Supabase JS CDN script loaded on every page before `store.js`, and the D3 CDN
+  script loaded only on `third-brain.html` (before `js/third-brain.js`) for its
+  force graph. Don't add any other CDN scripts without updating this file.
 - Every page must work from a `file://` open, not just a server, for everything
   that doesn't require the network (sign-in and cloud sync obviously need it).
 
@@ -34,7 +35,43 @@ js/creed.js       Audit items, scoring, verdicts
 js/lab.js         Anvil ritual + decoder phrase map
 js/manifesto.js   Click-to-capture excerpts
 js/journal.js     Journal rendering and filtering
+vault.html        Private vault dashboard (owner only, not in nav, noindex)
+js/vault.js       Vault dashboard rendering — reads `vault_dashboard` from Supabase
+third-brain.html  Private Third Brain map (owner only, in nav as "Third Brain", noindex)
+js/third-brain.js Force-graph rendering — reads `third_brain_map` from Supabase
+_tools/           Laptop-side generators + setup SQL + systemd units (the leading
+                  underscore keeps Jekyll/GitHub Pages from publishing it)
 ```
+
+## Vault dashboard
+
+`vault.html` is not public and not in the nav. Its data never lives in this
+repo: `_tools/vault_dashboard.py` runs on the owner's laptop every 10 minutes
+(systemd user timer), scans the Obsidian vault and calls the
+`push_vault_dashboard` RPC with a push key whose hash lives in
+`private.dashboard_push_key`. The `vault_dashboard` table's only RLS policy
+lets the owner's email read it. Never add a policy that widens that, never
+commit generator output (`_tools/*.json` is gitignored), and keep note bodies
+out of the payload — counts, titles, dates, task lines and link names only.
+`vault.html?preview=<local json>` renders a sample without Supabase (only
+honoured for file:// and localhost).
+
+## Third Brain map
+
+`third-brain.html` is not public, but unlike `vault.html` it *is* in the nav
+(a deliberate choice — it's real site content, just gated) — noindex still
+applies so it isn't crawled. Same shape as the vault dashboard, deliberately
+independent of it: `_tools/third_brain_push.py` reads Principles and Works
+from the vault's `01-Projects/Third Brain/03_Principles` and `04_Works`
+folders and calls the `push_third_brain_map` RPC with its own push key
+(`private.third_brain_push_key`, separate from the vault dashboard's, so one
+can be rotated without touching the other). Unlike the vault dashboard, the
+payload *is* meant to carry real content — principle statements, context,
+and relation reasoning — because that's the point of the page; it's still
+gated to owner-only by the same RLS pattern. This one is run by hand after a
+session that changes Principles/Works, not on a timer — see the script's own
+docstring. Run `_tools/third_brain_setup.sql` once in Supabase before the
+first push (`third_brain_push.py setup` fills in and prints it).
 
 Every page loads `js/store.js` first, then its own script. Page scripts assume
 `HF`, `hfFlash` and `hfParseTags` are already defined.

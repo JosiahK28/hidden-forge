@@ -258,6 +258,7 @@ if (hfClient) {
     const wasSignedIn = !!hfSession;
     hfSession = session;
     hfRenderAccount();
+    window.dispatchEvent(new CustomEvent('hf:auth', { detail: { event } }));
     if (session && !wasSignedIn) {
       hfPullFromCloud();
     }

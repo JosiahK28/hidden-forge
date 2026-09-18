@@ -1,0 +1,10 @@
+[Unit]
+Description=Push Obsidian vault stats to the Hidden Forge dashboard
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/python3 %h/hidden-forge/_tools/vault_dashboard.py push
+Nice=10
+IOSchedulingClass=idle
