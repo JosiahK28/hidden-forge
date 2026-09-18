@@ -12,8 +12,11 @@
 <link rel="stylesheet" href="css/style.css">
 <style>
   /* This page's header must report its real height so .tb-wrap can size
-     itself to the remaining viewport — see js/third-brain.js. */
-  body { overflow: hidden; }
+     itself to the remaining viewport — see js/third-brain.js. Both html
+     and body need overflow:hidden: document.scrollingElement is <html>
+     in standards mode, so leaving it out let the whole page scroll
+     instead of routing wheel events into .tb-detail's own scroll area. */
+  html, body { height: 100%; overflow: hidden; }
   main { display: flex; flex-direction: column; }
 </style>
 </head>
