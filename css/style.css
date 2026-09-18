@@ -837,6 +837,7 @@ label.field:first-child { margin-top: 0; }
 
 .tb-hud { position: absolute; z-index: 5; pointer-events: none; }
 .tb-hud a, .tb-hud button, .tb-hud input { pointer-events: auto; }
+.tb-detail { pointer-events: auto; }
 
 .tb-title {
   top: 1rem; left: 1rem;
