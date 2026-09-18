@@ -832,6 +832,7 @@ label.field:first-child { margin-top: 0; }
   display: flex; align-items: center; justify-content: center;
   padding: 1.5rem;
 }
+.tb-gate[hidden] { display: none; }
 .tb-gate .card { max-width: 26rem; text-align: center; }
 
 .tb-hud { position: absolute; z-index: 5; pointer-events: none; }
