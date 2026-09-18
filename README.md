@@ -16,6 +16,10 @@ js/creed.js       Audit statements, scoring, verdicts
 js/lab.js         Anvil ritual + decoder phrase map
 js/manifesto.js   Click-to-capture excerpts
 js/journal.js     Journal rendering and filtering
+vault.html        Private vault dashboard (owner only, not in nav)
+js/vault.js       Vault dashboard rendering
+third-brain.html  Private Third Brain map (owner only, in nav)
+js/third-brain.js Third Brain force-graph rendering
 ```
 
 ## Deploy on GitHub Pages
@@ -56,3 +60,34 @@ The Supabase project URL and anon public key are hardcoded in `js/store.js` — 
 2. In the SQL editor, create a `journal_entries` table (`id text primary key`, `user_id uuid references auth.users`, `ts bigint`, `text text`, `tags text[]`, `source text`) with row-level security enabled and select/insert/delete policies scoped to `auth.uid() = user_id`.
 3. In Authentication → Providers, enable Email with magic links. In Authentication → URL Configuration, add this site's URL(s) to the allowed redirect list.
 4. Replace `HF_SUPABASE_URL` and `HF_SUPABASE_ANON_KEY` at the top of `js/store.js` with your project's values (Project Settings → API).
+
+## Private vault dashboard
+
+`vault.html` shows live stats from the owner's Obsidian vault — writing output, project status, vault health, recent and open work — only to the owner's signed-in account. It isn't linked from the nav; bookmark it.
+
+One-time setup on the laptop (fish shell):
+
+1. `python3 ~/hidden-forge/_tools/vault_dashboard.py setup` — asks for the vault path and your sign-in email, creates a private push key in `~/.config/forge-dashboard/`, and writes a filled-in `setup.sql` there.
+2. Open Supabase → SQL Editor, paste `~/.config/forge-dashboard/setup.sql`, run it.
+3. `fish ~/hidden-forge/_tools/install.fish` — installs the 10-minute systemd user timer and does the first push.
+
+`python3 _tools/vault_dashboard.py build` prints the payload without uploading it. Titles under `01-Projects/Second Brain/03_People` are redacted by default; change `redact` in `~/.config/forge-dashboard/config.json`.
+
+## Private Third Brain map
+
+`third-brain.html` is an interactive force graph of the owner's beliefs, values and
+argumentative principles — mapped from the vault's `01-Projects/Third Brain` project — visible
+only to the owner's signed-in account. Unlike the vault dashboard it **is** linked from the nav
+("Third Brain"); the page itself is still gated, `noindex` keeps it out of search results.
+
+One-time setup:
+
+1. `python3 ~/hidden-forge/_tools/third_brain_push.py setup` — asks for the vault path and your
+   sign-in email, creates a private push key in `~/.config/forge-dashboard/`, and writes a
+   filled-in `third_brain_setup.sql` there.
+2. Open Supabase → SQL Editor, paste `~/.config/forge-dashboard/third_brain_setup.sql`, run it.
+3. `python3 ~/hidden-forge/_tools/third_brain_push.py push` — does the first push.
+
+Re-run `push` by hand whenever Principles or Works change in the vault; unlike the vault
+dashboard this isn't on a timer. `third_brain_push.py build` prints the payload without
+uploading it.
