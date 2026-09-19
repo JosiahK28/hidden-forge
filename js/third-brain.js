@@ -192,7 +192,14 @@
       .on('drag', (event, d) => { d.fx = event.x; d.fy = event.y; })
       .on('end', (event, d) => { if (!event.active) sim.alphaTarget(0); d.fx = null; d.fy = null; }));
 
-    svg.call(d3.zoom().scaleExtent([0.3, 4]).on('zoom', (event) => g.attr('transform', event.transform)));
+    // A node's own mousedown bubbles up to the svg: without this filter,
+    // zoom's pan gesture and a node's drag gesture both start from the same
+    // event and fight over the same pointer, which is what made dragging a
+    // node and panning/zooming the canvas feel random. Let drag own events
+    // that start on a node; zoom takes everything else.
+    svg.call(d3.zoom().scaleExtent([0.3, 4])
+      .filter(event => (!event.ctrlKey || event.type === 'wheel') && !event.button && !event.target.closest('.tb-node'))
+      .on('zoom', (event) => g.attr('transform', event.transform)));
 
     function relRow(r) {
       const color = resolveVar(REL_COLOR[r.type]);
