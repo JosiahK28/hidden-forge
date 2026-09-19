@@ -68,14 +68,21 @@
     [titleEl, searchWrap, legendEl, resetHintEl].forEach(el => { el.hidden = false; });
     titleSub.textContent = `a web of me — ${RAW.principles.length} principles · ${RAW.works.length} works`;
 
-    const W = 1200, H = 800;
+    const W = 2200, H = 1500;
+    const domainOrbit = Math.min(W, H) / 2 - 130;
     let nodes = [], links = [];
     const byId = {};
 
+    const svg = d3.select('#tb-stage').attr('viewBox', `0 0 ${W} ${H}`);
+
     RAW.domains.forEach((dname, i) => {
       const angle = (i / RAW.domains.length) * Math.PI * 2 - Math.PI / 2;
-      const n = { id: 'd-' + dname, kind: 'domain', label: dname, r: 40,
-        x: W / 2 + Math.cos(angle) * 260, y: H / 2 + Math.sin(angle) * 260,
+      // Domains are pinned (fx/fy), not just seeded: they anchor their own
+      // cluster, so cross-domain relation links can't drag two clusters
+      // together and erase the gap between them. A drag still frees a
+      // domain (the drag-end handler clears fx/fy), same as any node.
+      const x = W / 2 + Math.cos(angle) * domainOrbit, y = H / 2 + Math.sin(angle) * domainOrbit;
+      const n = { id: 'd-' + dname, kind: 'domain', label: dname, r: 40, x, y, fx: x, fy: y,
         count: RAW.principles.filter(p => p.domain === dname).length };
       nodes.push(n); byId[n.id] = n;
     });
@@ -85,7 +92,7 @@
       const n = { id: p.id, kind: 'principle', label: p.title, domain: p.domain,
         statement: p.statement, context: p.context, relations: p.relations,
         r: 9, hasContradiction,
-        x: parent.x + (Math.random() - 0.5) * 90, y: parent.y + (Math.random() - 0.5) * 90 };
+        x: parent.x + (Math.random() - 0.5) * 110, y: parent.y + (Math.random() - 0.5) * 110 };
       nodes.push(n); byId[n.id] = n;
       links.push({ source: parent.id, target: n.id, kind: 'cluster' });
     });
@@ -98,7 +105,7 @@
       }
       const n = { id: w.id, kind: 'work', label: w.title, status: w.status, project: w.project,
         summary: w.summary, principles: w.principles, r: 20,
-        x: cx + (Math.random() - 0.5) * 40, y: cy + (Math.random() - 0.5) * 40 };
+        x: cx + (Math.random() - 0.5) * 70, y: cy + (Math.random() - 0.5) * 70 };
       nodes.push(n); byId[n.id] = n;
       w.principles.forEach(pid => { if (byId[pid]) links.push({ source: n.id, target: pid, kind: 'uses' }); });
     });
@@ -108,7 +115,6 @@
       });
     });
 
-    const svg = d3.select('#tb-stage');
     const defs = svg.append('defs');
     function makeGlow(id, color) {
       const f = defs.append('filter').attr('id', id).attr('x', '-120%').attr('y', '-120%').attr('width', '340%').attr('height', '340%');
@@ -165,12 +171,10 @@
 
     const sim = d3.forceSimulation(nodes)
       .force('link', d3.forceLink(links).id(d => d.id)
-        .distance(d => d.kind === 'cluster' ? 60 : d.kind === 'uses' ? 90 : 130)
-        .strength(d => d.kind === 'cluster' ? 0.7 : d.kind === 'uses' ? 0.25 : 0.5))
-      .force('charge', d3.forceManyBody().strength(d => d.kind === 'domain' ? -900 : d.kind === 'work' ? -300 : -70))
-      .force('x', d3.forceX(W / 2).strength(0.03))
-      .force('y', d3.forceY(H / 2).strength(0.03))
-      .force('collide', d3.forceCollide().radius(d => d.r + (d.kind === 'principle' ? 14 : 22)))
+        .distance(d => d.kind === 'cluster' ? 65 : d.kind === 'uses' ? 110 : 160)
+        .strength(d => d.kind === 'cluster' ? 0.7 : d.kind === 'uses' ? 0.15 : 0.25))
+      .force('charge', d3.forceManyBody().strength(d => d.kind === 'domain' ? -300 : d.kind === 'work' ? -450 : -150))
+      .force('collide', d3.forceCollide().radius(d => d.r + (d.kind === 'principle' ? 20 : 30)))
       .on('tick', ticked);
 
     function ticked() {
