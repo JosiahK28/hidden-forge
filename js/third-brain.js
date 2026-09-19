@@ -69,21 +69,54 @@
     titleSub.textContent = `a web of me — ${RAW.principles.length} principles · ${RAW.works.length} works`;
 
     const W = 2200, H = 1500;
-    const domainOrbit = Math.min(W, H) / 2 - 130;
+    const spokeOrbit = Math.min(W, H) / 2 - 130;
     let nodes = [], links = [];
     const byId = {};
 
     const svg = d3.select('#tb-stage').attr('viewBox', `0 0 ${W} ${H}`);
 
-    RAW.domains.forEach((dname, i) => {
-      const angle = (i / RAW.domains.length) * Math.PI * 2 - Math.PI / 2;
+    // A flat ring of domains treats them as equally related to each other,
+    // which they aren't: relations between principles route overwhelmingly
+    // through one domain (the "hub") rather than spreading evenly. Putting
+    // the hub on the ring like everything else forces its many cross-domain
+    // links to cut all the way across the canvas. Instead: find whichever
+    // domain actually carries the most cross-domain relations and pin it at
+    // the centre, with the rest ringed around it — the layout then mirrors
+    // the graph's real shape instead of an arbitrary list order, and every
+    // cross-domain link gets shorter and easier to trace.
+    const domainOf = {};
+    RAW.principles.forEach(p => { domainOf[p.id] = p.domain; });
+    const crossDomainTouches = Object.fromEntries(RAW.domains.map(d => [d, 0]));
+    RAW.principles.forEach(p => {
+      p.relations.forEach(r => {
+        const otherDomain = r.target_id && domainOf[r.target_id];
+        if (otherDomain && otherDomain !== p.domain) {
+          crossDomainTouches[p.domain]++;
+          crossDomainTouches[otherDomain]++;
+        }
+      });
+    });
+    const domainCount = d => RAW.principles.filter(p => p.domain === d).length;
+    const hubDomain = RAW.domains.slice().sort((a, b) =>
+      crossDomainTouches[b] - crossDomainTouches[a] || domainCount(b) - domainCount(a) || a.localeCompare(b)
+    )[0];
+    const spokeDomains = RAW.domains.filter(d => d !== hubDomain).sort();
+
+    RAW.domains.forEach(dname => {
       // Domains are pinned (fx/fy), not just seeded: they anchor their own
       // cluster, so cross-domain relation links can't drag two clusters
       // together and erase the gap between them. A drag still frees a
       // domain (the drag-end handler clears fx/fy), same as any node.
-      const x = W / 2 + Math.cos(angle) * domainOrbit, y = H / 2 + Math.sin(angle) * domainOrbit;
+      let x, y;
+      if (dname === hubDomain) {
+        x = W / 2; y = H / 2;
+      } else {
+        const i = spokeDomains.indexOf(dname);
+        const angle = (i / spokeDomains.length) * Math.PI * 2 - Math.PI / 2;
+        x = W / 2 + Math.cos(angle) * spokeOrbit; y = H / 2 + Math.sin(angle) * spokeOrbit;
+      }
       const n = { id: 'd-' + dname, kind: 'domain', label: dname, r: 40, x, y, fx: x, fy: y,
-        count: RAW.principles.filter(p => p.domain === dname).length };
+        count: domainCount(dname) };
       nodes.push(n); byId[n.id] = n;
     });
     RAW.principles.forEach(p => {
@@ -171,10 +204,14 @@
 
     const sim = d3.forceSimulation(nodes)
       .force('link', d3.forceLink(links).id(d => d.id)
-        .distance(d => d.kind === 'cluster' ? 65 : d.kind === 'uses' ? 110 : 160)
+        // A domain with more principles needs a bigger ring to spread them
+        // around, not the same 65px every domain got when they were all a
+        // similar size — the hub in particular now holds far more
+        // principles (and far more of the cross-domain links) than a spoke.
+        .distance(d => d.kind === 'cluster' ? 55 + byId[d.source.id ?? d.source].count * 4 : d.kind === 'uses' ? 110 : 160)
         .strength(d => d.kind === 'cluster' ? 0.7 : d.kind === 'uses' ? 0.15 : 0.25))
-      .force('charge', d3.forceManyBody().strength(d => d.kind === 'domain' ? -300 : d.kind === 'work' ? -450 : -150))
-      .force('collide', d3.forceCollide().radius(d => d.r + (d.kind === 'principle' ? 20 : 30)))
+      .force('charge', d3.forceManyBody().strength(d => d.kind === 'domain' ? -300 - d.count * 25 : d.kind === 'work' ? -450 : -150))
+      .force('collide', d3.forceCollide().radius(d => d.r + (d.kind === 'principle' ? 26 : 30)))
       .on('tick', ticked);
 
     function ticked() {
