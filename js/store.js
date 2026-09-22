@@ -193,6 +193,10 @@ const hfAccountForm   = document.getElementById('hf-account-form');
 const hfAccountEmail  = document.getElementById('hf-account-email');
 
 function hfRenderAccount() {
+  // Links to the owner-only rooms are in every page's nav, hidden until a
+  // session exists. The rooms themselves are protected by row-level security,
+  // not by this — hiding the link is tidiness, not access control.
+  document.querySelectorAll('.hf-private').forEach(el => { el.hidden = !hfSession; });
   if (!hfAccountStatus || !hfAccountToggle) return;
   if (hfSession) {
     hfAccountStatus.textContent = hfSession.user.email;
@@ -252,6 +256,8 @@ if (hfAccountDelete) {
     });
   });
 }
+
+hfRenderAccount();
 
 if (hfClient) {
   hfClient.auth.onAuthStateChange((event, session) => {
