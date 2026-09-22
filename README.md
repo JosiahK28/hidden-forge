@@ -69,7 +69,11 @@ One-time setup on the laptop (fish shell):
 
 1. `python3 ~/hidden-forge/_tools/vault_dashboard.py setup` — asks for the vault path and your sign-in email, creates a private push key in `~/.config/forge-dashboard/`, and writes a filled-in `setup.sql` there.
 2. Open Supabase → SQL Editor, paste `~/.config/forge-dashboard/setup.sql`, run it.
-3. `fish ~/hidden-forge/_tools/install.fish` — installs the 10-minute systemd user timer and does the first push.
+3. `fish ~/hidden-forge/_tools/install.fish` — installs the keeper timer and does the first push.
+
+### The keeper
+
+`_tools/forge_sync.py` is the one scheduled job (`forge-sync.timer`, every 15 minutes). Each run: pushes the vault to GitHub only if git says something changed, uploads dashboard stats only if the numbers moved, and re-exports the Third Brain map only if a Principle or Work changed. An idle run makes no network request and logs nothing, so `journalctl --user -u forge-sync` reads as a list of real events. It also clears a stale `.git/index.lock` in the vault, which otherwise silently blocks every backup. `python3 _tools/forge_sync.py --check` says what it would do and changes nothing. Installing it retires the older `forge-dashboard.timer` and `vault-sync.timer`.
 
 `python3 _tools/vault_dashboard.py build` prints the payload without uploading it. Titles under `01-Projects/Second Brain/03_People` are redacted by default; change `redact` in `~/.config/forge-dashboard/config.json`.
 

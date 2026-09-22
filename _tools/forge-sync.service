@@ -1,0 +1,10 @@
+[Unit]
+Description=Keep the vault, its backup and the Hidden Forge dashboards current
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/python3 %h/hidden-forge/_tools/forge_sync.py
+Nice=10
+IOSchedulingClass=idle
