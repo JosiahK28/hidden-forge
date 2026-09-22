@@ -243,6 +243,9 @@
       h('div', { class: 'vault-grid', style: 'margin-top:1.25rem' }, sorted.map(projectCard)));
   }
 
+  // Older payloads only counted tags; newer ones count tags, domain or type.
+  const unclassified = hl => hl.unclassified || { count: hl.untagged, items: [] };
+
   function healthPanel(hl) {
     const inboxSub = hl.inbox.count ? `oldest ${ago(hl.inbox.oldest)}${hl.inbox.needs_review ? ` · ${hl.inbox.needs_review} need review` : ''}` : 'clear';
     const unsyncedSub = `last backup ${ago(hl.last_commit)}`;
@@ -251,7 +254,7 @@
         tile('Inbox', fmt(hl.inbox.count), inboxSub, hl.inbox.count > 10),
         tile('Broken links', fmt(hl.broken_links.count), null, hl.broken_links.count > 0),
         tile('Orphan notes', fmt(hl.orphans.count), `${hl.no_backlinks} with no backlinks`),
-        tile('Untagged', fmt(hl.untagged), `${hl.no_frontmatter} without properties`),
+        tile('Unclassified', fmt(unclassified(hl).count), `${hl.no_frontmatter} without properties`),
         tile('Uncommitted files', fmt(hl.unsynced_changes), unsyncedSub, hl.unsynced_changes > 25),
         tile('Attachments', fmt(hl.attachments.count), `${fmtBytes(hl.attachments.bytes)} · ${hl.canvases} canvases`)),
       h('div', { class: 'vault-grid' },
@@ -261,6 +264,9 @@
           list(hl.orphans.items, o => row(o.title, o.project, ''), 'No orphans.')),
         h('div', { class: 'card' }, h('p', { class: 'chart-title', text: 'Inbox — oldest first' }),
           list(hl.inbox.items, i => row(i.title, `${fmt(i.words)} words`, ago(i.mtime)), 'Inbox is empty. Capture something.'),
+          unclassified(hl).items.length ? h('details', {},
+            h('summary', { text: `${unclassified(hl).count} unclassified — no tags, domain or type` }),
+            list(unclassified(hl).items, u => row(u.title, u.project, ''), '')) : null,
           hl.stubs.count ? h('p', { class: 'hint', text: `${hl.stubs.count} stub notes under 30 words.` }) : null,
           hl.empty_folders.length ? h('p', { class: 'hint', text: `Empty folders: ${hl.empty_folders.join(', ')}` }) : null)));
   }
