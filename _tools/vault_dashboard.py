@@ -352,6 +352,7 @@ def build(cfg):
             "created": created,
             "status": re.split(r"\s+[\u2014\u2013(-]\s*|\s*\|", str(fm.get("status", "")).strip().lower())[0][:24],
             "type": str(fm.get("type", "")).strip().lower(),
+            "domain": str(fm.get("domain", "")).strip(),
             "has_fm": bool(fm),
             "tags": sorted(tags),
             "links_out": len(links),
@@ -497,7 +498,16 @@ def build(cfg):
         "no_backlinks": len(unlinked_in),
         "broken_links": {"count": len(broken),
                          "items": sorted(broken, key=lambda b: b["path"])[:40]},
+        # A note counts as classified if it carries tags, a domain or a type.
+        # Third Brain sorts by domain, the Second Brain instrument by type, the
+        # older writing by tags — counting only tags calls two of those three
+        # systems a gap when they are not one.
         "untagged": sum(1 for n in content if not n["tags"]),
+        "unclassified": {
+            "count": sum(1 for n in content if not (n["tags"] or n["domain"] or n["type"])),
+            "items": [{"title": n["title"], "project": n["project"]}
+                      for n in content if not (n["tags"] or n["domain"] or n["type"])][:25],
+        },
         "no_frontmatter": sum(1 for n in content if not n["has_fm"]),
         "stubs": {"count": sum(1 for n in content if n["words"] < 30),
                   "items": [{"title": n["title"], "project": n["project"], "words": n["words"]}
