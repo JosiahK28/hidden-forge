@@ -715,6 +715,9 @@ label.field:first-child { margin-top: 0; }
 .chart .bar-neg { fill: var(--red-bright); }
 .chart .hit { fill: transparent; cursor: default; }
 .chart .hit:hover + .bar-pos, .chart .hit:hover + .bar-neg { fill: var(--gold-bright); }
+.chart .line { stroke: var(--gold); stroke-width: 2; fill: none; }
+.chart .dot { fill: var(--gold-bright); stroke: var(--ink-card); stroke-width: 2; }
+.chart .dot:hover, .chart .dot:focus { stroke: var(--parchment); outline: none; }
 .chart .cell { stroke: var(--ink-card); stroke-width: 2; }
 .chart .cell:hover, .chart .cell:focus { stroke: var(--parchment); outline: none; }
 

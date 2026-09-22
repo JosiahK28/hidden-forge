@@ -117,7 +117,7 @@
     const W = left + cols * (cell + gap), H = top + 7 * (cell + gap);
     const max = Math.max(1, ...days.map(d => d.touched));
     const step = v => v === 0 ? 0 : Math.min(4, Math.ceil((v / max) * 4));
-    const svg = s('svg', { viewBox: `0 0 ${W} ${H}`, role: 'img', 'aria-label': 'Notes touched per day, last six months' });
+    const svg = s('svg', { viewBox: `0 0 ${W} ${H}`, role: 'img', 'aria-label': 'Notes created or edited per day, last six months' });
     ['Mon', 'Wed', 'Fri'].forEach((l, i) => {
       const t = s('text', { x: 0, y: top + (i * 2) * (cell + gap) + cell - 3 }); t.textContent = l; svg.append(t);
     });
@@ -135,12 +135,13 @@
         class: 'cell', x: left + c * (cell + gap), y: top + r * (cell + gap),
         width: cell, height: cell, rx: 2, fill: `var(--heat-${step(d.touched)})`, tabindex: '-1'
       });
-      bindTip(rect, `${dayLabel(d.d)} — ${plural(d.touched, 'note')} touched${d.created ? `, ${d.created} new` : ''}`);
+      const edited = d.edited == null ? d.touched : d.edited;
+      bindTip(rect, `${dayLabel(d.d)} — ${plural(edited, 'note')} edited${d.created ? `, ${d.created} created` : ''}`);
       svg.append(rect);
     });
     const legend = h('div', { class: 'heat-legend' }, 'Less',
       [0, 1, 2, 3, 4].map(i => { const x = h('i'); x.style.background = `var(--heat-${i})`; return x; }), 'More');
-    return h('div', { class: 'chart' }, h('p', { class: 'chart-title', text: 'Notes touched per day — 26 weeks' }), svg, legend);
+    return h('div', { class: 'chart' }, h('p', { class: 'chart-title', text: 'Notes created or edited per day — 26 weeks' }), svg, legend);
   }
 
   function netBars(daily) {
@@ -202,6 +203,50 @@
 
   /* ---------- panels ---------- */
 
+  function growthChart(growth) {
+    const wrap = h('div', { class: 'chart' },
+      h('p', { class: 'chart-title', text: 'Notes in the vault — since the first one' }));
+    if (!growth || growth.length < 2) {
+      wrap.append(h('p', { class: 'hint', text: 'Not enough dated notes to draw the climb yet.' }));
+      return wrap;
+    }
+    const W = 520, H = 170, padL = 44, padB = 22, padT = 10;
+    const pts = growth.map(g => ({ t: parseLocal(g.d).getTime(), n: g.n, d: g.d }));
+    const today = Date.now();
+    const t0 = pts[0].t, t1 = Math.max(today, pts[pts.length - 1].t);
+    const max = pts[pts.length - 1].n;
+    const x = t => padL + (t - t0) / (t1 - t0 || 1) * (W - padL);
+    const y = n => padT + (1 - n / (max || 1)) * (H - padT - padB);
+    const svg = s('svg', { viewBox: `0 0 ${W} ${H}`, role: 'img',
+      'aria-label': `Notes in the vault over time, ${max} today` });
+    [max, Math.round(max / 2), 0].forEach(v => {
+      svg.append(s('line', { class: v === 0 ? 'base' : 'grid', x1: padL, x2: W, y1: y(v), y2: y(v) }));
+      const t = s('text', { x: padL - 6, y: y(v) + 3, 'text-anchor': 'end' });
+      t.textContent = fmt(v); svg.append(t);
+    });
+    // A note count only changes on the days notes were made, so the line
+    // holds flat between measurements rather than pretending to climb.
+    let d = `M${x(pts[0].t)},${y(0)} L${x(pts[0].t)},${y(pts[0].n)}`;
+    for (let i = 1; i < pts.length; i++) {
+      d += ` L${x(pts[i].t)},${y(pts[i - 1].n)} L${x(pts[i].t)},${y(pts[i].n)}`;
+    }
+    d += ` L${x(t1)},${y(max)}`;
+    svg.append(s('path', { class: 'line', d, fill: 'none' }));
+    pts.forEach(p => {
+      const dot = s('circle', { class: 'dot', cx: x(p.t), cy: y(p.n), r: 4, tabindex: '-1' });
+      bindTip(dot, `${dayLabel(p.d)} — ${plural(p.n, 'note')} in the vault`);
+      svg.append(dot);
+    });
+    const a = s('text', { x: padL, y: H - 5 }); a.textContent = dayLabel(pts[0].d);
+    const b = s('text', { x: W, y: H - 5, 'text-anchor': 'end' }); b.textContent = 'today';
+    svg.append(a, b);
+    wrap.append(svg,
+      h('p', { class: 'hint', text: 'Measured from each note\u2019s creation date, not estimated.' }),
+      h('details', {}, h('summary', { text: 'Show as table' }),
+        table(['Day', 'Notes'], growth.slice().reverse().map(g => [dayLabel(g.d), g.n]))));
+    return wrap;
+  }
+
   function writingPanel(w) {
     return panel('01', 'Writing output',
       h('div', { class: 'tiles' },
@@ -211,7 +256,8 @@
         tile('Current streak', plural(w.streak, 'day'), `longest ${w.longest_streak} · ${w.active_days_30}/30 active`)),
       h('div', { class: 'vault-grid' },
         h('div', { class: 'card' }, heatmap(w.heatmap)),
-        h('div', { class: 'card' }, netBars(w.daily_net))));
+        h('div', { class: 'card' }, netBars(w.daily_net)),
+        w.growth ? h('div', { class: 'card' }, growthChart(w.growth)) : null));
   }
 
   function projectCard(p) {

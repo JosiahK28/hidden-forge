@@ -387,7 +387,8 @@ def build(cfg):
     d = start
     while d <= today:
         k = d.isoformat()
-        heat.append({"d": k, "touched": days.get(k, 0), "created": created_per_day.get(k, 0)})
+        heat.append({"d": k, "touched": max(days.get(k, 0), created_per_day.get(k, 0)),
+                     "edited": days.get(k, 0), "created": created_per_day.get(k, 0)})
         d += timedelta(days=1)
     streak = 0
     d = today if days.get(today.isoformat()) else today - timedelta(days=1)
@@ -421,8 +422,17 @@ def build(cfg):
     base = [t for k, t in ordered if k <= week_ago]
     words_7d = total_words - base[-1] if base else None
 
+    # Growth is recoverable from creation dates even where word history is not:
+    # every note carries a created date (frontmatter, dated filename, or first
+    # git add), so the vault's note count over time is measured, not guessed.
+    growth, running = [], 0
+    for d in sorted(k for k in created_per_day if k):
+        running += created_per_day[d]
+        growth.append({"d": d, "n": running})
+
     writing = {
         "total_words": total_words,
+        "growth": growth,
         "total_notes": len(content),
         "words_7d": words_7d,
         "notes_created_7d": sum(c for k, c in created_per_day.items() if k and k > week_ago),
