@@ -925,6 +925,7 @@ label.field:first-child { margin-top: 0; }
 
 .tb-node-label, .tb-work-label, .tb-dom-label { fill: var(--parchment); pointer-events: none; user-select: none; }
 .tb-node-label { font-family: var(--font-mono); }
+#tb-stage:not(.tb-zoomed) .tb-node:not(.lit):not(:hover) .tb-node-label { display: none; }
 .tb-work-label, .tb-dom-label { font-family: var(--font-display); font-weight: 700; }
 
 @media (max-width: 40rem) {
