@@ -68,9 +68,11 @@ folders and calls the `push_third_brain_map` RPC with its own push key
 can be rotated without touching the other). Unlike the vault dashboard, the
 payload *is* meant to carry real content — principle statements, context,
 and relation reasoning — because that's the point of the page; it's still
-gated to owner-only by the same RLS pattern. This one is run by hand after a
-session that changes Principles/Works, not on a timer — see the script's own
-docstring. Run `_tools/third_brain_setup.sql` once in Supabase before the
+gated to owner-only by the same RLS pattern. It is pushed automatically by
+`_tools/forge_sync.py` (the `forge-sync.timer` keeper, every 15 minutes), but
+only when the built payload actually changed — edits to fields the map
+doesn't carry, like a Principle's `sources`, don't trigger an upload. It can
+still be run by hand with `third_brain_push.py push`. Run `_tools/third_brain_setup.sql` once in Supabase before the
 first push (`third_brain_push.py setup` fills in and prints it).
 
 Every page loads `js/store.js` first, then its own script. Page scripts assume
