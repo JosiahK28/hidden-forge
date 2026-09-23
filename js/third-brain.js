@@ -69,7 +69,9 @@
     titleSub.textContent = `a web of me — ${RAW.principles.length} principles · ${RAW.works.length} works`;
 
     const W = 2200, H = 1500;
-    const spokeOrbit = Math.min(W, H) / 2 - 130;
+    // An ellipse, not a circle: the canvas is landscape, and a circular
+    // orbit left its whole left and right thirds empty.
+    const orbitX = W / 2 - 170, orbitY = H / 2 - 130;
     let nodes = [], links = [];
     const byId = {};
 
@@ -113,19 +115,52 @@
       } else {
         const i = spokeDomains.indexOf(dname);
         const angle = (i / spokeDomains.length) * Math.PI * 2 - Math.PI / 2;
-        x = W / 2 + Math.cos(angle) * spokeOrbit; y = H / 2 + Math.sin(angle) * spokeOrbit;
+        x = W / 2 + Math.cos(angle) * orbitX; y = H / 2 + Math.sin(angle) * orbitY;
       }
       const n = { id: 'd-' + dname, kind: 'domain', label: dname, r: 40, x, y, fx: x, fy: y,
         count: domainCount(dname) };
       nodes.push(n); byId[n.id] = n;
     });
+    // Each domain's principles sit on a ring around it, sized so they
+    // don't overlap however many a domain holds. Their order on the ring
+    // isn't arbitrary: a principle with relations into other domains is
+    // slotted on the side facing those domains, so cross-domain links run
+    // outward instead of cutting back across their own cluster.
+    const ringRadius = d => Math.max(80, domainCount(d) * 72 / (2 * Math.PI));
+    const slot = {};
+    RAW.domains.forEach(dname => {
+      const home = byId['d-' + dname];
+      const members = RAW.principles.filter(p => p.domain === dname);
+      const outward = Math.atan2(home.y - H / 2, home.x - W / 2);
+      const pref = members.map((p, i) => {
+        let sx = 0, sy = 0;
+        p.relations.forEach(r => {
+          const other = r.target_id && domainOf[r.target_id];
+          if (other && other !== dname) { sx += byId['d-' + other].x - home.x; sy += byId['d-' + other].y - home.y; }
+        });
+        if (sx || sy) return { p, a: Math.atan2(sy, sx) };
+        // No cross-domain pull: spokes face away from the hub; the hub spreads evenly.
+        return { p, a: dname === hubDomain ? (i / members.length) * Math.PI * 2 : outward };
+      }).sort((a, b) => a.a - b.a);
+      const step = (Math.PI * 2) / (pref.length || 1);
+      // Rotate the evenly spaced slots so that, on average, each one lands
+      // as close as possible to the angle its principle wanted.
+      let cs = 0, sn = 0;
+      pref.forEach((e, i) => { cs += Math.cos(e.a - i * step); sn += Math.sin(e.a - i * step); });
+      const offset = Math.atan2(sn, cs), R = ringRadius(dname);
+      pref.forEach((e, i) => {
+        const a = offset + i * step;
+        slot[e.p.id] = { x: home.x + Math.cos(a) * R, y: home.y + Math.sin(a) * R };
+      });
+    });
+
     RAW.principles.forEach(p => {
       const parent = byId['d-' + p.domain];
       const hasContradiction = p.relations.some(r => r.type === 'contradicts');
       const n = { id: p.id, kind: 'principle', label: p.title, domain: p.domain,
         statement: p.statement, context: p.context, relations: p.relations,
-        r: 9, hasContradiction,
-        x: parent.x + (Math.random() - 0.5) * 110, y: parent.y + (Math.random() - 0.5) * 110 };
+        r: 9, hasContradiction, tx: slot[p.id].x, ty: slot[p.id].y,
+        x: slot[p.id].x, y: slot[p.id].y };
       nodes.push(n); byId[n.id] = n;
       links.push({ source: parent.id, target: n.id, kind: 'cluster' });
     });
@@ -136,9 +171,24 @@
         cx = used.reduce((s, n) => s + n.x, 0) / used.length;
         cy = used.reduce((s, n) => s + n.y, 0) / used.length;
       }
+      // A work drawn from one domain has its centroid on top of that
+      // domain's own node. Push it out past the ring instead, away from
+      // the hub (or, for the hub, away from the canvas centre toward the
+      // principles it actually uses).
+      RAW.domains.forEach(dname => {
+        const home = byId['d-' + dname];
+        const clear = ringRadius(dname) + 85;
+        let dx = cx - home.x, dy = cy - home.y, dist = Math.hypot(dx, dy);
+        if (dist >= clear) return;
+        if (dist < 1) {
+          dx = home.x - W / 2; dy = home.y - H / 2;
+          if (!dx && !dy) { const a = (RAW.works.indexOf(w) / RAW.works.length) * Math.PI * 2; dx = Math.cos(a); dy = Math.sin(a); }
+          dist = Math.hypot(dx, dy);
+        }
+        cx = home.x + dx / dist * clear; cy = home.y + dy / dist * clear;
+      });
       const n = { id: w.id, kind: 'work', label: w.title, status: w.status, project: w.project,
-        summary: w.summary, principles: w.principles, r: 20,
-        x: cx + (Math.random() - 0.5) * 70, y: cy + (Math.random() - 0.5) * 70 };
+        summary: w.summary, principles: w.principles, r: 20, tx: cx, ty: cy, x: cx, y: cy };
       nodes.push(n); byId[n.id] = n;
       w.principles.forEach(pid => { if (byId[pid]) links.push({ source: n.id, target: pid, kind: 'uses' }); });
     });
@@ -199,20 +249,25 @@
       .attr('class', 'tb-work-label').attr('text-anchor', 'middle').attr('dy', d => -(d.r + 8)).attr('font-size', 11)
       .text(d => d.label.length > 34 ? d.label.slice(0, 33) + '…' : d.label);
     nodeSel.filter(d => d.kind === 'principle').append('text')
-      .attr('class', 'tb-node-label').attr('text-anchor', 'middle').attr('dy', d => -(d.r + 5)).attr('font-size', 8).attr('opacity', 0.7)
+      .attr('class', 'tb-node-label').attr('text-anchor', 'middle').attr('dy', d => -(d.r + 5)).attr('font-size', 11).attr('opacity', 0.7)
       .text(d => d.label.length > 30 ? d.label.slice(0, 29) + '…' : d.label);
 
+    // Placement comes from the ring slots and work targets above, not from
+    // the links: with 100+ relation and "uses" links all pulling, every
+    // cluster used to collapse into one tangle in the middle of the canvas.
+    // Links stay drawn but only nudge; collision keeps labels apart.
     const sim = d3.forceSimulation(nodes)
-      .force('link', d3.forceLink(links).id(d => d.id)
-        // A domain with more principles needs a bigger ring to spread them
-        // around, not the same 65px every domain got when they were all a
-        // similar size — the hub in particular now holds far more
-        // principles (and far more of the cross-domain links) than a spoke.
-        .distance(d => d.kind === 'cluster' ? 55 + byId[d.source.id ?? d.source].count * 4 : d.kind === 'uses' ? 110 : 160)
-        .strength(d => d.kind === 'cluster' ? 0.7 : d.kind === 'uses' ? 0.15 : 0.25))
-      .force('charge', d3.forceManyBody().strength(d => d.kind === 'domain' ? -300 - d.count * 25 : d.kind === 'work' ? -450 : -150))
-      .force('collide', d3.forceCollide().radius(d => d.r + (d.kind === 'principle' ? 26 : 30)))
-      .on('tick', ticked);
+      .force('link', d3.forceLink(links).id(d => d.id).strength(0))
+      .force('x', d3.forceX(d => d.tx ?? d.x).strength(d => d.kind === 'principle' ? 0.35 : d.kind === 'work' ? 0.2 : 0))
+      .force('y', d3.forceY(d => d.ty ?? d.y).strength(d => d.kind === 'principle' ? 0.35 : d.kind === 'work' ? 0.2 : 0))
+      .force('charge', d3.forceManyBody().strength(d => d.kind === 'work' ? -260 : -60).distanceMax(260))
+      .force('collide', d3.forceCollide().iterations(3).radius(d => d.kind === 'principle' ? d.r + 14 : d.kind === 'work' ? d.r + 55 : d.r + 20))
+      .stop();
+    // Settle before the first paint so the map opens already laid out
+    // rather than wobbling into place.
+    sim.tick(Math.ceil(Math.log(sim.alphaMin()) / Math.log(1 - sim.alphaDecay())));
+    sim.on('tick', ticked);
+    ticked();
 
     function ticked() {
       nodes.forEach(d => {
@@ -234,9 +289,22 @@
     // event and fight over the same pointer, which is what made dragging a
     // node and panning/zooming the canvas feel random. Let drag own events
     // that start on a node; zoom takes everything else.
-    svg.call(d3.zoom().scaleExtent([0.3, 4])
+    // Principle labels only show once zoomed in far enough to read them
+    // (or on hover, trace and search) — at full-map zoom 51 of them just
+    // stack into noise over the links.
+    const zoom = d3.zoom().scaleExtent([0.3, 4])
       .filter(event => (!event.ctrlKey || event.type === 'wheel') && !event.button && !event.target.closest('.tb-node'))
-      .on('zoom', (event) => g.attr('transform', event.transform)));
+      .on('zoom', (event) => {
+        g.attr('transform', event.transform);
+        svg.classed('tb-zoomed', event.transform.k >= 1.6);
+      });
+    svg.call(zoom);
+
+    const pad = 60;
+    const [x0, x1] = d3.extent(nodes, d => d.x), [y0, y1] = d3.extent(nodes, d => d.y);
+    const k = Math.min(W / (x1 - x0 + pad * 2), H / (y1 - y0 + pad * 2), 1.5);
+    svg.call(zoom.transform, d3.zoomIdentity
+      .translate(W / 2 - k * (x0 + x1) / 2, H / 2 - k * (y0 + y1) / 2).scale(k));
 
     function relRow(r) {
       const color = resolveVar(REL_COLOR[r.type]);
@@ -283,6 +351,7 @@
         .attr('opacity', n => near.has(n.id) ? (n.kind === 'principle' ? 0.95 : 1) : 0.05);
       linkSel.transition().duration(200).attr('opacity', l => (near.has(l.source.id ?? l.source) && near.has(l.target.id ?? l.target)) ? 1 : 0.04);
       clusterSel.transition().duration(200).attr('opacity', l => (near.has(l.source.id ?? l.source) && near.has(l.target.id ?? l.target)) ? 0.5 : 0.04);
+      nodeSel.classed('lit', n => near.has(n.id));
       showDetail(d);
     }
     nodeSel.on('click', (event, d) => { event.stopPropagation(); focusNode(d); });
@@ -291,6 +360,7 @@
       nodeSel.selectAll('text').transition().duration(200).attr('opacity', d => d && d.kind === 'principle' ? 0.7 : 1);
       linkSel.transition().duration(200).attr('opacity', d => d.kind === 'uses' ? 0.7 : 0.85);
       clusterSel.transition().duration(200).attr('opacity', 1);
+      nodeSel.classed('lit', false);
       detailEl.classList.remove('show');
     });
 
@@ -299,6 +369,7 @@
       if (!q) {
         nodeSel.selectAll('circle:not(.warn-ring), path').attr('opacity', d => d.kind === 'domain' ? 0.5 : 0.9);
         nodeSel.selectAll('text').attr('opacity', d => d && d.kind === 'principle' ? 0.7 : 1);
+        nodeSel.classed('lit', false);
         searchCountEl.textContent = ''; return;
       }
       let count = 0;
@@ -311,6 +382,7 @@
         if (!d) return 0; if (d.kind === 'domain') return 0.15;
         return d.label.toLowerCase().includes(q) ? 1 : 0.06;
       });
+      nodeSel.classed('lit', d => d.kind !== 'domain' && d.label.toLowerCase().includes(q));
       searchCountEl.textContent = count + ' match' + (count === 1 ? '' : 'es');
     });
   }
