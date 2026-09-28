@@ -1,2 +1,5 @@
 # Local test output from the vault dashboard generator — contains real vault data
 _tools/*.json
+
+# Python bytecode from running the _tools scripts
+__pycache__/
