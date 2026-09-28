@@ -92,6 +92,6 @@ One-time setup:
 2. Open Supabase → SQL Editor, paste `~/.config/forge-dashboard/third_brain_setup.sql`, run it.
 3. `python3 ~/hidden-forge/_tools/third_brain_push.py push` — does the first push.
 
-Re-run `push` by hand whenever Principles or Works change in the vault; unlike the vault
-dashboard this isn't on a timer. `third_brain_push.py build` prints the payload without
+After that, `forge-sync.timer` re-pushes it automatically whenever a Principle or Work
+changes; `push` still works by hand. `third_brain_push.py build` prints the payload without
 uploading it.
