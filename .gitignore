@@ -3,3 +3,7 @@ _tools/*.json
 
 # Python bytecode from running the _tools scripts
 __pycache__/
+
+# Private tooling and agent notes: keep out of the public repo
+_tools/
+CLAUDE.md
